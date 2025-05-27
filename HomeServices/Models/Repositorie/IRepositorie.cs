@@ -1,0 +1,12 @@
+﻿namespace HomeServices.Models.Repositorie
+{
+    public interface IRepositorie<TEntity>
+    {
+        IList<TEntity> view();
+        void Add(TEntity entity);
+        void Update(int id, TEntity entity);
+        void Delete(int id, TEntity entity);
+        TEntity Find(int id);
+
+    }
+}

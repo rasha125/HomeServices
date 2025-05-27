@@ -4,6 +4,7 @@
     {
         public int PersonsId { get; set; }
         public int UsersId { get; set; }
+        public Users Users { get; set; }    
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 

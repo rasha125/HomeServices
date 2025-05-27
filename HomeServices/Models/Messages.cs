@@ -3,9 +3,16 @@
     public class Messages
     {
         public int MessagesId { get; set; }
+
         public int SenderId { get; set; }
+
         public int ReceiverId { get; set; }
+
+        public Providers Providers { get; set; }
+        public Persons Persons { get; set; }
+
         public string Content { get; set; }
+
         public DateTime SentAt { get; set; } = DateTime.UtcNow;
         public bool IsRead { get; set; } = false;
         public DateTime? ReadAt { get; set; }

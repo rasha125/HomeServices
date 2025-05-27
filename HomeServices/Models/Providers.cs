@@ -13,7 +13,9 @@ namespace HomeServices.Models
         public string? Description { get; set; }
 
         public int UsersId { get; set; }
+        public Users Users { get; set; }    
         public int ServicesId { get; set; }
+        public Services Services { get; set; }  
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;

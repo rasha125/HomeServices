@@ -22,8 +22,10 @@ namespace HomeServices.Models
         public string? Description { get; set; }
 
         public int ProviderId { get; set; }
+        public Providers Providers { get; set; }
 
         public int PersonId { get; set; }
+        public Persons Persons { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
