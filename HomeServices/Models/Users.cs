@@ -31,7 +31,7 @@ namespace HomeServices.Models
         public string Country { get; set; }
 
         public string? ImagePath { get; set; }
-        public int RoleId { get; set; } 
+        public int RoleId { get; set; }   // Todo
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;

@@ -35,7 +35,7 @@ namespace HomeServices.Models.Repositorie
             db.SaveChanges();
         }
 
-        public IList<Users> view()
+        public IList<Users> View()
         {
             return db.Users.ToList();
         }

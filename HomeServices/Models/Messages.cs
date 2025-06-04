@@ -8,8 +8,7 @@
 
         public int ReceiverId { get; set; }
 
-        public Providers Providers { get; set; }
-        public Persons Persons { get; set; }
+        public Users Users { get; set; }
 
         public string Content { get; set; }
 

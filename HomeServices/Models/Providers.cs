@@ -16,12 +16,5 @@ namespace HomeServices.Models
         public Users Users { get; set; }    
         public int ServicesId { get; set; }
         public Services Services { get; set; }  
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-
-        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
-
-        public DateTime? DeletedAt { get; set; }
-
-
     }
 }

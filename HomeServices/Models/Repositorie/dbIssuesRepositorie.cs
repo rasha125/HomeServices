@@ -5,7 +5,7 @@ namespace HomeServices.Models.Repositorie
 {
     public class dbIssuesRepositorie : IRepositorie<Issues>
     {
-        public AppDBContext db { get; }
+        public  AppDBContext db { get; }
         public dbIssuesRepositorie(AppDBContext _db)
         {
             db = _db;

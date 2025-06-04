@@ -8,7 +8,7 @@ namespace HomeServices.Models
 
         [Required]
         public string Type { get; set; }
-        public string ?Description { get; set; }
+        public string? Description { get; set; }
         public string? File { get; set; }
         public int UserId { get; set; }
         public Users Users{ get; set; }
