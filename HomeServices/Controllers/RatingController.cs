@@ -7,9 +7,13 @@ namespace HomeServices.Controllers
 {
     public class RatingController : Controller
     {
-        IRepositorie<Ratings> _rep;
 
-        public RatingController(IRepositorie<Ratings> rep)
+        IRepositorie<Ratings,int> _rep;
+
+
+
+        public RatingController(IRepositorie<Ratings, int> rep)
+
         {
             _rep = rep;
         }

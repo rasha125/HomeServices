@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HomeServices.Models.Repositorie
 {
-    public class dbProvidersRepositorie : IRepositorie<Providers>
+    public class dbProvidersRepositorie : IRepositorie<Providers , int>
     {
         public AppDBContext db { get; }
         public dbProvidersRepositorie(AppDBContext _db)
@@ -34,9 +34,9 @@ namespace HomeServices.Models.Repositorie
             db.SaveChanges();
         }
 
-        public IList<Providers> view()
+        public IList<Providers> View()
         {
-            return db.Providers.Include(x=>x.Users).Include(x=>x.Services).ToList();
+            return db.Providers.Include(x=>x.User).Include(x=>x.Services).ToList();
         }
     }
 }

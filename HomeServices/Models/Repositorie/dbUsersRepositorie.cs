@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HomeServices.Models.Repositorie
 {
-    public class dbUsersRepositorie : IRepositorie<Users>
+    public class dbUsersRepositorie : IRepositorie<Users, string>
     {
         public AppDBContext db { get; }
         public dbUsersRepositorie(AppDBContext _db)
@@ -16,7 +16,7 @@ namespace HomeServices.Models.Repositorie
             db.SaveChanges();
         }
 
-        public void Delete(int id, Users entity)
+        public void Delete(String id, Users entity)
         {
            var data=db.Users.Find(id);
             db.Users.Remove(data);
@@ -24,12 +24,12 @@ namespace HomeServices.Models.Repositorie
 
         }
 
-        public Users Find(int id)
+        public Users Find(String id)
         {
-            return db.Users.SingleOrDefault(x=>x.UsersId==id);
+            return db.Users.SingleOrDefault(x=>x.Id==id);
         }
 
-        public void Update(int id, Users entity)
+        public void Update(String id, Users entity)
         {
             db.Users.Update(entity);
             db.SaveChanges();

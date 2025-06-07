@@ -1,7 +1,7 @@
 ﻿
 namespace HomeServices.Models.Repositorie
 {
-    public class dbRatingsRepositorie : IRepositorie<Ratings>
+    public class dbRatingsRepositorie : IRepositorie<Ratings , int>
     {
         public AppDBContext db { get; }
         public dbRatingsRepositorie(AppDBContext _db)
@@ -31,7 +31,7 @@ namespace HomeServices.Models.Repositorie
             db.SaveChanges();
         }
 
-        public IList<Ratings> view()
+        public IList<Ratings> View()
         {
             return db.Ratings.ToList();
         }

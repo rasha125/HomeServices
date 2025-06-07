@@ -7,9 +7,12 @@ namespace HomeServices.Controllers
 {
     public class ServiceController : Controller
     {
-        IRepositorie<Services> _rep;
 
-        public ServiceController(IRepositorie<Services> rep)
+        IRepositorie<Services,int> _rep;
+
+
+        public ServiceController(IRepositorie<Services, int> rep)
+
         {
             _rep = rep;
         }

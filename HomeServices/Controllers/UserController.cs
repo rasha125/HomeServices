@@ -1,84 +1,161 @@
-﻿using HomeServices.Models;
-using HomeServices.Models.Repositorie;
-using Microsoft.AspNetCore.Http;
+﻿using HomeServices.Data;
+using HomeServices.Models;
+using HomeServices.ViewModels;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
-namespace HomeUsers.Controllers
+namespace HomeServices.Controllers
 {
-    public class UserController : Controller
+    public class UsersController : Controller
     {
-        IRepositorie<Users> _rep;
+        private readonly AppDBContext _context;
+        private readonly UserManager<Users> _userManager;
+        private readonly SignInManager<Users> _signInManager;
 
-        public UserController(IRepositorie<Users> rep)
+        public UsersController(AppDBContext context, UserManager<Users> userManager, SignInManager<Users> signInManager)
         {
-            _rep = rep;
+            _context = context;
+            _userManager = userManager;
+            _signInManager = signInManager;
         }
 
-        public ActionResult Create(Users collection)
+        [HttpGet]
+        public IActionResult Register()
         {
-            try
+            var model = new RegisterViewModel
             {
-                _rep.Add(collection);
-                return RedirectToAction(nameof(Index));
+                ServicesList = _context.Services
+                    .Select(s => new SelectListItem
+                    {
+                        Value = s.ServicesId.ToString(),
+                        Text = s.ServiceName
+                    }).ToList()
+            };
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Register(RegisterViewModel model)
+        {
+            model.ServicesList = _context.Services
+                .Select(s => new SelectListItem
+                {
+                    Value = s.ServicesId.ToString(),
+                    Text = s.ServiceName
+                }).ToList();
+
+            if (!ModelState.IsValid)
+                return View(model);
+
+            if (model.Role == UserRole.Provider)
+            {
+                if (!model.Age.HasValue)
+                    ModelState.AddModelError("Age", "Age is required for providers.");
+                if (!model.ServicesId.HasValue)
+                    ModelState.AddModelError("ServicesId", "Service is required for providers.");
+
+                if (!ModelState.IsValid)
+                    return View(model);
             }
-            catch
+
+            var user = new Users
             {
+                UserName = model.Email,
+                Email = model.Email,
+                PhoneNumber = model.Phone,
+                FirstName = model.FirstName,
+                LastName = model.LastName,
+                Gender = model.Gender,
+                City = model.City,
+                Country = model.Country,
+                RoleId = (int)model.Role,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
+            };
+
+            var result = await _userManager.CreateAsync(user, model.Password);
+
+            if (!result.Succeeded)
+            {
+                foreach (var error in result.Errors)
+                    ModelState.AddModelError("", error.Description);
+                return View(model);
+            }
+
+            if (model.Role == UserRole.Client)
+            {
+                var person = new Persons
+                {
+                    UserId = user.Id,
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow
+                };
+                _context.Persons.Add(person);
+            }
+            else if (model.Role == UserRole.Provider)
+            {
+                var provider = new Providers
+                {
+                    UserId = user.Id,
+                    Age = model.Age.Value,
+                    ServicesId = model.ServicesId.Value,
+                    ProviderStatus = "Available",
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow
+                };
+                _context.Providers.Add(provider);
+            }
+
+            await _context.SaveChangesAsync();
+            await _signInManager.SignInAsync(user, isPersistent: false);
+
+            return RedirectToAction("Index", "Home");
+        }
+
+        [HttpGet]
+        public IActionResult Login()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Login(string email, string password)
+        {
+            if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
+            {
+                ModelState.AddModelError("", "Please enter email and password.");
                 return View();
             }
-        }
 
-        public IActionResult Index()
-        {
-            var data = _rep.View().ToList();
-            return View(data);
-        }
+            var result = await _signInManager.PasswordSignInAsync(email, password, isPersistent: false, lockoutOnFailure: false);
 
-        // GET: UsersController/Edit/5
-        public ActionResult Edit(int id)
-        {
-            var data = _rep.Find(id);
-            return View(data);
-        }
-        // POST: UsersController/Edit/5
-        public ActionResult Edit(int id, Users collection)
-        {
-            try
+            if (result.Succeeded)
             {
-                _rep.Update(id , collection);
-                return RedirectToAction(nameof(Index));
+                var user = await _userManager.FindByEmailAsync(email);
+                var role = ((UserRole)user.RoleId).ToString();
+
+                if (role == "Admin")
+                    return RedirectToAction("Index", "Admin");
+                else if (role == "Provider")
+                    return RedirectToAction("Index", "Provider");
+                else
+                    return RedirectToAction("Index", "Client");
             }
-            catch
-            {
-                return View();
-            }
+
+            ModelState.AddModelError("", "Invalid login attempt.");
+            return View();
         }
 
-        // GET: UsersController/Delete/5
-        public ActionResult Delete(int id)
+        [HttpPost]
+        public async Task<IActionResult> Logout()
         {
-            var data = _rep.Find(id);
-            return View(data);
-        }
-
-        // POST: UsersController/Delete/5
-        public ActionResult Delete(int id, Users collection)
-        {
-            try
-            {
-                _rep.Delete(id , collection);
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
-        // GET: UsersController/Details/5
-        public ActionResult Details(int id)
-        {
-            var data = _rep.Find(id);
-            return View(data);
+            await _signInManager.SignOutAsync();
+            return RedirectToAction("Login", "Users");
         }
     }
 }

@@ -7,9 +7,11 @@ namespace HomeServices.Controllers
 {
     public class IssueController : Controller
     {
-        IRepositorie<Issues> _rep;
 
-        public IssueController(IRepositorie<Issues> rep)
+        IRepositorie<Issues,int> _rep;
+
+
+        public IssueController(IRepositorie<Issues,int> rep)
         {
             _rep = rep;
         }

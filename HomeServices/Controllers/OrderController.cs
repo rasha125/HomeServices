@@ -7,9 +7,13 @@ namespace HomeServices.Controllers
 {
     public class OrderController : Controller
     {
-        IRepositorie<Orders> _rep;
 
-        public OrderController(IRepositorie<Orders> rep)
+        IRepositorie<Orders,int> _rep;
+
+
+
+        public OrderController(IRepositorie<Orders, int> rep)
+
         {
             _rep = rep;
         }

@@ -7,9 +7,13 @@ namespace HomeServices.Controllers
 {
     public class PersonController : Controller
     {
-        IRepositorie<Persons> _rep;
 
-        public PersonController(IRepositorie<Persons> rep)
+        IRepositorie<Persons,int> _rep;
+
+
+
+        public PersonController(IRepositorie<Persons, int> rep)
+
         {
             _rep = rep;
         }

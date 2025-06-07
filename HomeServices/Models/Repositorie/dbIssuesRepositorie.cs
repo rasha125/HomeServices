@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HomeServices.Models.Repositorie
 {
-    public class dbIssuesRepositorie : IRepositorie<Issues>
+    public class dbIssuesRepositorie : IRepositorie<Issues ,int>
     {
         public  AppDBContext db { get; }
         public dbIssuesRepositorie(AppDBContext _db)
@@ -34,9 +34,9 @@ namespace HomeServices.Models.Repositorie
             db.SaveChanges();   
         }
 
-        public IList<Issues> view()
+        public IList<Issues> View()
         {
-            return db.Issues.Include(x=>x.Users).ToList();
+            return db.Issues.Include(x=>x.User).ToList();
         }
     }
 }

@@ -1,25 +1,16 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Identity;
+
 
 namespace HomeServices.Models
 {
-    public class Users
+    public class Users : IdentityUser
     {
-        public int UsersId { get; set; }
-
         [Required]
         public string FirstName { get; set; }
 
         [Required]
         public string LastName { get; set; }
-
-        [Required, EmailAddress]
-        public string Email { get; set; }
-
-        [Required]
-        public string Password { get; set; }
-
-        [Required]
-        public string? PhoneNumber { get; set; }
 
         [Required]
         public string Gender { get; set; }
@@ -31,7 +22,10 @@ namespace HomeServices.Models
         public string Country { get; set; }
 
         public string? ImagePath { get; set; }
-        public int RoleId { get; set; }   // Todo
+
+
+        public int RoleId { get; set; } 
+
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
