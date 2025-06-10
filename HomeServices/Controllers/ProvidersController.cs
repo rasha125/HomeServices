@@ -1,10 +1,12 @@
 ﻿using HomeServices.Models;
 using HomeServices.Models.Repositorie;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HomeServices.Controllers
 {
+    [Authorize(Roles = "Provider")]
     public class ProviderController : Controller
     {
 
@@ -17,7 +19,7 @@ namespace HomeServices.Controllers
         {
             _rep = rep;
         }
-
+        
         public ActionResult Create(Providers collection)
         {
             try

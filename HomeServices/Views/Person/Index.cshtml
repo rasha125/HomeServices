@@ -1,0 +1,72 @@
+﻿@model HomeServices.ViewModels.VMPersonIndex
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>قائمة الأشخاص</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>@Html.DisplayNameFor(model => model.People[0].User.Id)</th>
+            <th>@Html.DisplayNameFor(model => model.People[0].CreatedAt)</th>
+            <th>@Html.DisplayNameFor(model => model.People[0].UpdatedAt)</th>
+            <th>@Html.DisplayNameFor(model => model.People[0].DeletedAt)</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.People)
+        {
+            <tr>
+                <td>@Html.DisplayFor(modelItem => item.User.Id)</td>
+                <td>@Html.DisplayFor(modelItem => item.CreatedAt)</td>
+                <td>@Html.DisplayFor(modelItem => item.UpdatedAt)</td>
+                <td>@Html.DisplayFor(modelItem => item.DeletedAt)</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.PersonsId">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.PersonsId">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.PersonsId">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<hr />
+
+<h2>أقرب مزودي الخدمة إليك:</h2>
+
+@if (Model.NearbyProviders == null || !Model.NearbyProviders.Any())
+{
+    <p>لا يوجد مزودون قريبون حاليًا.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>الاسم الكامل</th>
+                <th>المدينة</th>
+                <th>الهاتف</th>
+                <th>البريد الإلكتروني</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var provider in Model.NearbyProviders)
+            {
+                <tr>
+                    <td>@provider.User.FirstName</td>
+                    <td>@provider.User.City</td>
+                    <td>@provider.User.PhoneNumber</td>
+                    <td>@provider.User.Email</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

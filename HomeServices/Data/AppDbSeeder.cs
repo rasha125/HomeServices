@@ -8,12 +8,25 @@ namespace HomeServices.Data
 {
     public static class AppDbSeeder
     {
+        public static async Task SeedRolesAsync(IServiceProvider serviceProvider)
+        {
+            var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+
+            foreach (var role in Enum.GetNames(typeof(UserRole)))
+            {
+                if (!await roleManager.RoleExistsAsync(role))
+                {
+                    await roleManager.CreateAsync(new IdentityRole(role));
+                }
+            }
+        }
+
         public static async Task SeedAdminAsync(IServiceProvider serviceProvider)
         {
             var userManager = serviceProvider.GetRequiredService<UserManager<Users>>();
             var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
-           
+            // تأكد من وجود دور Admin أولاً
             if (!await roleManager.RoleExistsAsync("Admin"))
             {
                 await roleManager.CreateAsync(new IdentityRole("Admin"));
@@ -31,7 +44,7 @@ namespace HomeServices.Data
                     Email = adminEmail,
                     FirstName = "System",
                     LastName = "Admin",
-                    City = "Nablus",            
+                    City = "Nablus",
                     Country = "Palestine",
                     Gender = "",
                     EmailConfirmed = true,
@@ -39,7 +52,6 @@ namespace HomeServices.Data
                     CreatedAt = DateTime.UtcNow,
                     UpdatedAt = DateTime.UtcNow
                 };
-
 
                 var result = await userManager.CreateAsync(adminUser, adminPassword);
                 if (result.Succeeded)

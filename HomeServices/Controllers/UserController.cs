@@ -87,6 +87,8 @@ namespace HomeServices.Controllers
                 return View(model);
             }
 
+            await _userManager.AddToRoleAsync(user, model.Role.ToString());
+
             if (model.Role == UserRole.Client)
             {
                 var person = new Persons
@@ -144,7 +146,7 @@ namespace HomeServices.Controllers
                 else if (role == "Provider")
                     return RedirectToAction("Index", "Provider");
                 else
-                    return RedirectToAction("Index", "Client");
+                    return RedirectToAction("Index", "Person");
             }
 
             ModelState.AddModelError("", "Invalid login attempt.");

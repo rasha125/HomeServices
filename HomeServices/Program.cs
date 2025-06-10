@@ -1,4 +1,4 @@
-using HomeServices.Models;
+﻿using HomeServices.Models;
 using HomeServices.Data;
 using HomeServices.Models.Repositorie;
 using Microsoft.AspNetCore.Identity;
@@ -52,8 +52,10 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
+    await AppDbSeeder.SeedRolesAsync(services); 
     await AppDbSeeder.SeedAdminAsync(services);
 }
+
 
 app.UseStaticFiles();
 app.UseRouting();
