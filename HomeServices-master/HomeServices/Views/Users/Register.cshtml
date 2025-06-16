@@ -1,0 +1,137 @@
+﻿@model HomeServices.ViewModels.RegisterViewModel
+
+@{
+    ViewData["Title"] = "Register";
+    Layout = "~/Views/Shared/_LayoutLogin.cshtml";
+}
+
+<h2>Register</h2>
+
+<!-- أزرار اختيار نوع المستخدم -->
+<div class="btn-group mb-3">
+    <button type="button" class="select-btn active" id="userBtn">Client</button>
+    <button type="button" class="select-btn" id="providerBtn">Provider</button>
+</div>
+
+<!-- نموذج التسجيل -->
+<form asp-action="Register" method="post">
+    <div asp-validation-summary="All" class="text-danger"></div>
+
+    <!-- الحقول الأساسية -->
+    <div class="form-group">
+        <label asp-for="FirstName"></label>
+        <input asp-for="FirstName" class="form-control" />
+        <span asp-validation-for="FirstName" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="LastName"></label>
+        <input asp-for="LastName" class="form-control" />
+        <span asp-validation-for="LastName" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Email"></label>
+        <input asp-for="Email" class="form-control" />
+        <span asp-validation-for="Email" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Phone"></label>
+        <input asp-for="Phone" class="form-control" />
+        <span asp-validation-for="Phone" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="City"></label>
+        <input asp-for="City" class="form-control" />
+        <span asp-validation-for="City" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Country"></label>
+        <input asp-for="Country" class="form-control" />
+        <span asp-validation-for="Country" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Gender"></label>
+        <select asp-for="Gender" class="form-control">
+            <option value="">-- Select Gender --</option>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+        </select>
+        <span asp-validation-for="Gender" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Password"></label>
+        <input asp-for="Password" class="form-control" />
+        <span asp-validation-for="Password" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="ConfirmPassword"></label>
+        <input asp-for="ConfirmPassword" class="form-control" />
+        <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+    </div>
+
+    <!-- حقل مخفي لتخزين الدور -->
+    <input type="hidden" asp-for="Role" id="roleInput"/>
+
+    <!-- الحقول الخاصة بمقدم الخدمة -->
+    <div id="providerFields" style="display: none;">
+        <div class="form-group">
+            <label asp-for="Age"></label>
+            <input asp-for="Age" class="form-control" />
+            <span asp-validation-for="Age" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="ServicesId">Service</label>
+            <select asp-for="ServicesId" class="form-control" asp-items="Model.ServicesList">
+                <option value="">-- Select Service --</option>
+            </select>
+            <span asp-validation-for="ServicesId" class="text-danger"></span>
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-success">Register</button>
+</form>
+@section Scripts {
+  
+    @* <partial name="_ValidationScriptsPartial" /> *@
+    <script>
+        function toggleRole(roleValue) {
+            const providerFields = document.getElementById("providerFields");
+            const roleInput = document.getElementById("roleInput");
+
+            roleInput.value = roleValue;
+
+            if (roleValue === 2) {
+                providerFields.style.display = "block";
+            } else {
+                providerFields.style.display = "none";
+            }
+        }
+
+        document.getElementById("userBtn").addEventListener("click", function () {
+            toggleRole(1); // Client
+            this.classList.add("active");
+            document.getElementById("providerBtn").classList.remove("active");
+        });
+
+        document.getElementById("providerBtn").addEventListener("click", function () {
+            toggleRole(2); // Provider
+            this.classList.add("active");
+            document.getElementById("userBtn").classList.remove("active");
+        });
+
+        // Default role when page loads
+        window.addEventListener("load", function () {
+            toggleRole(1);
+        });
+    </script>
+    
+}
+

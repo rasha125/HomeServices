@@ -1,0 +1,72 @@
+﻿<!DOCTYPE html>
+
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewBag.Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+</head>
+<body>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-2 bg-light">
+                <h5 class="text-center mt-3">My Website</h5>
+                <ul class="nav flex-column">
+
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <li class="nav-item"><a class="nav-link" href="/Admin/Index">Dashboard</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/Person/Index">Clients</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/Provider/Index">Providers</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/Providers/Manage">Services Request</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/Service/Index">Services</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/Admin/Messages">Messages</a></li>
+                    }
+                    else if (User.IsInRole("Client"))
+                    {
+                        <li class="nav-item"><a class="nav-link" href="/Provider/Services">My Services</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/Provider/Orders">Orders</a></li>
+                    }
+                    else if (User.IsInRole("Provider"))
+                    {
+                        <li class="nav-item"><a class="nav-link" href="/Client/Appointments">Appointments</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/Client/Profile">Profile</a></li>
+                    }
+                    else
+                    {
+                        <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+                    }
+
+                    <li class="nav-item mt-3">
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <form asp-controller="Account" asp-action="Logout" method="post">
+                                <button type="submit" class="btn btn-danger w-100">Logout</button>
+                            </form>
+                        }
+                        else
+                        {
+                            <br />
+                            <br />
+                            <a class="nav-link" href="/Account/Login">Login</a>
+                        }
+                    </li>
+
+                </ul>
+            </div>
+
+            <!-- Main content -->
+            <div class="col-10 mt-3">
+                @RenderBody()
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    @RenderSection("Scripts", required: false)
+
+</body>
+</html>
