@@ -1,5 +1,6 @@
 ﻿using HomeServices.Models;
 using HomeServices.Models.Repositorie;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -28,7 +29,7 @@ namespace HomeServices.Controllers
                 return View();
             }
         }
-
+        [Authorize(Roles = "Admin")]
         public IActionResult Index()
         {
             var data = _rep.View().ToList();
@@ -76,6 +77,7 @@ namespace HomeServices.Controllers
             }
         }
 
+        [Authorize(Roles = "Admin")]
         // GET: IssuesController/Details/5
         public ActionResult Details(int id)
         {

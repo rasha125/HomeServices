@@ -1,5 +1,6 @@
 ﻿using HomeServices.Models;
 using HomeServices.Models.Repositorie;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -30,7 +31,7 @@ namespace HomeServices.Controllers
                 return View();
             }
         }
-
+       
         public IActionResult Index()
         {
             var data = _rep.View().ToList();

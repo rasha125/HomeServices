@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace HomeServices.Migrations
 {
     /// <inheritdoc />
-    public partial class CreateDataBase : Migration
+    public partial class createdatabase : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -211,6 +211,8 @@ namespace HomeServices.Migrations
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     File = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    AdminNotes = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true)

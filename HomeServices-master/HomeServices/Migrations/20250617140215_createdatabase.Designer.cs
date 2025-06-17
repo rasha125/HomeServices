@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HomeServices.Migrations
 {
     [DbContext(typeof(AppDBContext))]
-    [Migration("20250616150455_CreateDataBase")]
-    partial class CreateDataBase
+    [Migration("20250617140215_createdatabase")]
+    partial class createdatabase
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -33,6 +33,10 @@ namespace HomeServices.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IssuesId"));
 
+                    b.Property<string>("AdminNotes")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
@@ -44,6 +48,9 @@ namespace HomeServices.Migrations
 
                     b.Property<string>("File")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
 
                     b.Property<string>("Type")
                         .IsRequired()

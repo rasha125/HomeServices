@@ -30,6 +30,10 @@ namespace HomeServices.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IssuesId"));
 
+                    b.Property<string>("AdminNotes")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
@@ -41,6 +45,9 @@ namespace HomeServices.Migrations
 
                     b.Property<string>("File")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
 
                     b.Property<string>("Type")
                         .IsRequired()

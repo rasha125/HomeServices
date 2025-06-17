@@ -1,25 +1,38 @@
-﻿@model IEnumerable<HomeServices.Models.Services>
+﻿@model IEnumerable<HomeServices.Models.Issues>
 
 @{
     ViewData["Title"] = "Index";
 }
 
-<h1>Services</h1>
-
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
+<h1>Report Issue</h1>
 
 <br />
 <input id="myInput" type="text" placeholder="Search..">
 <br />
 <br />
 <table class="table" id="myTable">
+
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.ServiceName)
+                @Html.DisplayNameFor(model => model.User.FirstName)
             </th>
+            <th>
+                @Html.DisplayNameFor(model => model.User.LastName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Type)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Description)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.File)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Status)
+            </th>
+
             <th>
                 @Html.DisplayNameFor(model => model.CreatedAt)
             </th>
@@ -35,9 +48,26 @@
     <tbody>
 @foreach (var item in Model) {
         <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.User.FirstName)
+                </td>
+
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.User.LastName)
+                </td>
             <td>
-                @Html.DisplayFor(modelItem => item.ServiceName)
+                @Html.DisplayFor(modelItem => item.Type)
             </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Description)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.File)
+            </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Status)
+                </td>
             <td>
                 @Html.DisplayFor(modelItem => item.CreatedAt)
             </td>
@@ -48,8 +78,8 @@
                 @Html.DisplayFor(modelItem => item.DeletedAt)
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.ServicesId">Edit</a> |
-                <a asp-action="Delete" asp-route-id="@item.ServicesId">Delete</a>
+               
+                <a asp-action="Delete" asp-route-id="@item.IssuesId">Delete</a>
             </td>
         </tr>
 }
