@@ -1,8 +1,22 @@
-﻿@model HomeServices.ViewModels.VMPersonIndex
-
+﻿
 @{
     ViewData["Title"] = "Home";
     Layout = "~/Views/_Layout.cshtml";
 }
 
-<h2>مرحبًا، @Model.FirstName @Model.LastName</h2>
+<h2>مرحبًا، @Model.PersonInfo.User.FirstName @Model.PersonInfo.User.LastName</h2>
+<h3 class="my-3">Nearest Technicians</h3>
+<ul class="list-group mb-4">
+    @foreach (var tech in Model.NearestProviders)
+    {
+        <li class="list-group-item">@tech.User.FirstName @tech.User.LastName</li>
+    }
+</ul>
+
+<h3 class="my-3">My Orders</h3>
+<ul class="list-group">
+    @foreach (var order in Model.MyOrders)
+    {
+        <li class="list-group-item">@order.OrdersId @order.Persons.User.FirstName @order.Persons.User.LastName  @order.Status</li>
+    }
+</ul>

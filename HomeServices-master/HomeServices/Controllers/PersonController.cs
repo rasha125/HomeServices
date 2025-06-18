@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using NuGet.Protocol.Core.Types;
+using System.Security.Claims;
 
 
 
@@ -16,6 +18,8 @@ namespace HomeServices.Controllers
     {
         private readonly IRepositorie<Persons, int> _rep;
         private readonly IRepositorie<Providers, int> _providerRep;
+        private readonly IRepositorie<Orders, int> _orderRep;
+       
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly UserManager<Users> _userManager;
         private readonly AppDBContext _context;
@@ -23,12 +27,14 @@ namespace HomeServices.Controllers
         public PersonController(
             IRepositorie<Persons, int> rep,
             IRepositorie<Providers, int> providerRep,
+            IRepositorie<Orders, int> orderRep,
             IHttpContextAccessor httpContextAccessor,
             UserManager<Users> userManager,
             AppDBContext context)
         {
             _rep = rep;
             _providerRep = providerRep;
+            _orderRep = orderRep;
             _httpContextAccessor = httpContextAccessor;
             _userManager = userManager;
             _context = context;
@@ -60,14 +66,22 @@ namespace HomeServices.Controllers
             var userName = _httpContextAccessor.HttpContext.User.Identity.Name;
             var currentPerson = _rep.View().FirstOrDefault(p => p.User.UserName == userName);
 
-            var viewModel = new VMPersonIndex
+            var providers = _providerRep.View().ToList();
+
+            var orders = _orderRep.View()
+                .Where(o => o.Persons.User.UserName == userName)
+                .ToList();
+
+
+            var model = new PersonHomeViewModel
             {
-                FirstName = currentPerson.User.FirstName,
-                LastName = currentPerson.User.LastName,
+                PersonInfo = currentPerson,
+                NearestProviders = providers,
+                MyOrders = orders
             };
 
+            return View(model);
 
-            return View(viewModel);
         }
         public ActionResult Edit(int id)
         {
@@ -116,5 +130,6 @@ namespace HomeServices.Controllers
             var data = _rep.Find(id);
             return View(data);
         }
+
     }
 }
