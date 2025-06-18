@@ -6,5 +6,9 @@ namespace HomeServices.ViewModels
     {
         public List<Persons> People { get; set; }
         public List<Providers> NearbyProviders { get; set; }
+
+        public string FirstName { get; set; }
+
+        public string LastName { get; set; }
     }
 }

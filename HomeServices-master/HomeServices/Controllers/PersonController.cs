@@ -3,6 +3,7 @@ using HomeServices.Models.Repositorie;
 using HomeServices.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,18 +14,24 @@ namespace HomeServices.Controllers
     //[Authorize(Roles = "Client")]
     public class PersonController : Controller
     {
-        IRepositorie<Persons, int> _rep;
-        IRepositorie<Providers, int> _providerRep;
-        IHttpContextAccessor _httpContextAccessor;
+        private readonly IRepositorie<Persons, int> _rep;
+        private readonly IRepositorie<Providers, int> _providerRep;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly UserManager<Users> _userManager;
+        private readonly AppDBContext _context;
 
         public PersonController(
             IRepositorie<Persons, int> rep,
             IRepositorie<Providers, int> providerRep,
-            IHttpContextAccessor httpContextAccessor)
+            IHttpContextAccessor httpContextAccessor,
+            UserManager<Users> userManager,
+            AppDBContext context)
         {
             _rep = rep;
             _providerRep = providerRep;
             _httpContextAccessor = httpContextAccessor;
+            _userManager = userManager;
+            _context = context;
         }
 
         public ActionResult Create(Persons collection)
@@ -47,6 +54,21 @@ namespace HomeServices.Controllers
             return View(data);
         }
 
+        [Authorize(Roles = "Client")]
+        public IActionResult dashboard()
+        {
+            var userName = _httpContextAccessor.HttpContext.User.Identity.Name;
+            var currentPerson = _rep.View().FirstOrDefault(p => p.User.UserName == userName);
+
+            var viewModel = new VMPersonIndex
+            {
+                FirstName = currentPerson.User.FirstName,
+                LastName = currentPerson.User.LastName,
+            };
+
+
+            return View(viewModel);
+        }
         public ActionResult Edit(int id)
         {
             var data = _rep.Find(id);

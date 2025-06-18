@@ -1,0 +1,128 @@
+﻿@model HomeServices.ViewModels.VMProviderProfile
+
+@{
+    ViewData["Title"] = "Profile";
+    Layout = "~/Views/_Layout.cshtml";
+}
+
+<div class="container d-flex flex-column justify-content-center align-items-center" style="min-height: 80vh; max-width: 600px;">
+    <form asp-action="EditProfile" method="post" enctype="multipart/form-data" id="profileForm" class="profile-form">
+
+        <!-- hidden input لتحديد نوع الإجراء (حذف/تغيير صورة) -->
+        <input type="hidden" id="ActionType" name="actionType" value="" />
+
+        <div class="mb-3 d-flex justify-content-center">
+            @if (!string.IsNullOrEmpty(Model.ImagePath))
+            {
+                <div class="profile-photo mb-2">
+                    <img src="~/uploads/@Model.ImagePath" alt="Profile Image" class="profile-img rounded-circle" style="max-width:150px; max-height:150px; object-fit:cover;" />
+                </div>
+
+                <div id="imageButtons" class="d-none justify-content-center gap-1">
+                    <button type="button" onclick="markDeletePhoto()" class="btn btn-danger btn-sm">Delete Photo</button>
+
+                    <label class="btn btn-primary btn-sm mb-0" style="cursor:pointer;">
+                        Change Photo
+                        <input type="file" name="ProfileImage" accept="image/*" onchange="markChangePhoto(this)" style="display:none;" />
+                    </label>
+                </div>
+            }
+            else
+            {
+                <label class="profile-photo" style="cursor:pointer;" id="uploadLabel">
+                    <span class="placeholder-text">Upload Photo</span>
+                    <input type="file" name="ProfileImage" accept="image/*" onchange="this.form.submit();" style="display:none;" />
+                </label>
+            }
+        </div>
+
+        <h3 class="text-center mb-4 d-flex justify-content-center gap-2 align-items-center">
+            <span id="nameDisplay" class="fw-bold" style="font-size: 1.5rem;">
+                @Model.FirstName @Model.LastName
+            </span>
+
+            <input type="text" id="FirstNameInput" name="FirstName" value="@Model.FirstName" class="form-control text-center fw-bold" style="display:none; width: 150px;" />
+            <input type="text" id="LastNameInput" name="LastName" value="@Model.LastName" class="form-control text-center fw-bold" style="display:none; width: 150px; margin-top: 0;" />
+        </h3>
+
+        <div class="mb-3">
+            <label class="form-label">Phone Number</label>
+            <input type="text" name="PhoneNumber" value="@Model.PhoneNumber" readonly class="form-control" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">City</label>
+            <input type="text" name="City" value="@Model.City" readonly class="form-control" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Country</label>
+            <input type="text" name="Country" value="@Model.Country" readonly class="form-control" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Description</label>
+            <textarea name="Description" rows="3" readonly class="form-control">@Model.Description</textarea>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Service</label>
+            <input type="text" value="@Model.ServiceName" readonly class="form-control" />
+        </div>
+
+        <div class="d-flex justify-content-between">
+            <button type="button" id="editBtn" class="btn btn-outline-primary">Edit</button>
+            <button type="submit" id="saveBtn" class="btn btn-success d-none">Save</button>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        const editBtn = document.getElementById('editBtn');
+        const saveBtn = document.getElementById('saveBtn');
+        const nameDisplay = document.getElementById('nameDisplay');
+        const firstNameInput = document.getElementById('FirstNameInput');
+        const lastNameInput = document.getElementById('LastNameInput');
+        const imageButtons = document.getElementById('imageButtons');
+        const form = document.getElementById('profileForm');
+
+        editBtn.addEventListener('click', function () {
+            nameDisplay.style.display = 'none';
+            firstNameInput.style.display = 'inline-block';
+            lastNameInput.style.display = 'inline-block';
+
+            const inputs = form.querySelectorAll('input, textarea');
+            inputs.forEach(function (input) {
+                if (input !== firstNameInput && input !== lastNameInput && input.name !== '' && input.type !== 'hidden') {
+                    input.removeAttribute('readonly');
+                }
+            });
+
+            if (imageButtons) {
+                imageButtons.classList.remove('d-none');
+            }
+
+            editBtn.classList.add('d-none');
+            saveBtn.classList.remove('d-none');
+        });
+
+        function markDeletePhoto() {
+            document.getElementById("ActionType").value = "delete";
+            alert("Photo will be deleted upon saving.");
+        }
+
+        function markChangePhoto(input) {
+            if (input.files && input.files.length > 0) {
+                document.getElementById("ActionType").value = "change";
+                alert("New photo selected. It will be uploaded upon saving.");
+            }
+        }
+    </script>
+
+    <style>
+        .profile-photo img.profile-img {
+            border-radius: 50%;
+        }
+    </style>
+}

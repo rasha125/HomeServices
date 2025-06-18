@@ -49,6 +49,8 @@ namespace HomeServices.ViewModels
 
         public int? ServicesId { get; set; }
 
+        public string Description { get; set; }
+
         public List<SelectListItem> ServicesList { get; set; } = new();
     }
 }

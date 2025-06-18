@@ -43,11 +43,19 @@ namespace HomeServices.Controllers
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
             model.ServicesList = _context.Services
-                .Select(s => new SelectListItem
-                {
-                    Value = s.ServicesId.ToString(),
-                    Text = s.ServiceName
-                }).ToList();
+         .Select(s => new SelectListItem
+         {
+             Value = s.ServicesId.ToString(),
+             Text = s.ServiceName
+         }).ToList();
+
+            // إذا المستخدم Client، احذف الحقول الخاصة بـ Provider من ModelState
+            if (model.Role != UserRole.Provider)
+            {
+                ModelState.Remove(nameof(model.Age));
+                ModelState.Remove(nameof(model.Description));
+                ModelState.Remove(nameof(model.ServicesId));
+            }
 
             if (!ModelState.IsValid)
                 return View(model);
@@ -107,6 +115,7 @@ namespace HomeServices.Controllers
                     Age = model.Age.Value,
                     ServicesId = model.ServicesId.Value,
                     ProviderStatus = "Available",
+                    Description = model.Description, // ✅ استخدم وصف المستخدم وليس نص ثابت
                     CreatedAt = DateTime.UtcNow,
                     UpdatedAt = DateTime.UtcNow
                 };
@@ -115,6 +124,15 @@ namespace HomeServices.Controllers
 
             await _context.SaveChangesAsync();
             await _signInManager.SignInAsync(user, isPersistent: false);
+
+            if (model.Role == UserRole.Client)
+            {
+                return RedirectToAction("dashboard", "Person");
+            }
+            else if (model.Role == UserRole.Provider)
+            {
+                return RedirectToAction("dashboard", "Provider");
+            }
 
             return RedirectToAction("Index", "Home");
         }
@@ -142,11 +160,11 @@ namespace HomeServices.Controllers
                 var role = ((UserRole)user.RoleId).ToString();
 
                 if (role == "Admin")
-                    return RedirectToAction("Index", "Admin");
+                    return RedirectToAction("dashboard", "Admin");
                 else if (role == "Provider")
-                    return RedirectToAction("Index", "Provider");
+                    return RedirectToAction("dashboard", "Provider");
                 else
-                    return RedirectToAction("Index", "Person");
+                    return RedirectToAction("dashboard", "Person");
             }
 
             ModelState.AddModelError("", "Invalid login attempt.");
