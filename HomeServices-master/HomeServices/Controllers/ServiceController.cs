@@ -30,12 +30,6 @@ namespace HomeServices.Controllers
             }
         }
 
-        public IActionResult Index()
-        {
-            var data = _rep.View().ToList();
-            return View(data);
-        }
-
         // GET: ServicesController/Edit/5
         [HttpGet]
         public ActionResult Edit(int id)
@@ -84,6 +78,18 @@ namespace HomeServices.Controllers
         {
             var data = _rep.Find(id);
             return View(data);
+        }
+
+        public ActionResult Index()
+        {
+            var services = _rep.View().ToList();
+            return View(services);
+        }
+
+        public ActionResult Providers(int serviceId)
+        {
+            // show all providers for the service (to be implemented)
+            return View();
         }
     }
 }

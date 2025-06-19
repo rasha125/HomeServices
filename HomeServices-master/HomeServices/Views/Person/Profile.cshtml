@@ -1,0 +1,24 @@
+﻿@{
+    ViewData["Title"] = "Profile";
+    Layout = "~/Views/_Layout.cshtml";
+}
+<a asp-action="Login" asp-controller="Users" class="btn btn-danger">Logout</a>
+
+<img src="@Model.PersonInfo.User.ImagePath" alt="Profile Page">
+
+<h2>مرحبًا، @Model.PersonInfo.User.FirstName @Model.PersonInfo.User.LastName</h2>
+
+<ul class="list-group mb-4">
+    <!-- Can't find the values -->
+    <li>
+        <span>Email</span>
+    </li>
+    <li>
+        <span>Phone</span>  
+    </li>
+    <li>
+        <span>Address</span>
+    </li>
+    
+</ul>
+

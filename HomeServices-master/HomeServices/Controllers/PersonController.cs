@@ -60,29 +60,7 @@ namespace HomeServices.Controllers
             return View(data);
         }
 
-        [Authorize(Roles = "Client")]
-        public IActionResult dashboard()
-        {
-            var userName = _httpContextAccessor.HttpContext.User.Identity.Name;
-            var currentPerson = _rep.View().FirstOrDefault(p => p.User.UserName == userName);
-
-            var providers = _providerRep.View().ToList();
-
-            var orders = _orderRep.View()
-                .Where(o => o.Persons.User.UserName == userName)
-                .ToList();
-
-
-            var model = new PersonHomeViewModel
-            {
-                PersonInfo = currentPerson,
-                NearestProviders = providers,
-                MyOrders = orders
-            };
-
-            return View(model);
-
-        }
+     
         public ActionResult Edit(int id)
         {
             var data = _rep.Find(id);
@@ -129,6 +107,40 @@ namespace HomeServices.Controllers
         {
             var data = _rep.Find(id);
             return View(data);
+        }
+
+        [Authorize(Roles = "Client")]
+        public ActionResult Dashboard()
+        {
+            var userName = _httpContextAccessor.HttpContext.User.Identity.Name;
+            var currentPerson = _rep.View().FirstOrDefault(p => p.User.UserName == userName);
+
+            var providers = _providerRep.View().ToList();
+
+            var orders = _orderRep.View()
+                .Where(o => o.Persons.User.UserName == userName)
+                .ToList();
+
+
+            var model = new VMPersonIndex
+            {
+                PersonInfo = currentPerson,
+                NearbyProviders = providers,
+                MyOrders = orders
+            };
+
+            return View(model);
+
+        }
+
+        [Authorize(Roles = "Client")]
+        public ActionResult Profile()
+        {
+            var userName = _httpContextAccessor.HttpContext.User.Identity.Name;
+            var currentPerson = _rep.View().FirstOrDefault(p => p.User.UserName == userName);
+
+            return View(currentPerson);
+
         }
 
     }

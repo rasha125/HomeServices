@@ -1,72 +1,45 @@
-﻿@model IEnumerable<HomeServices.Models.Services>
+﻿@using HomeServices.Models
+@model List<Services>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Services";
 }
 
-<h1>Services</h1>
+<input type="text" id="serviceSearch" class="form-control" placeholder="Search services..." />
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
+<div class="row mt-4" id="servicesContainer">
+    @foreach (var service in Model)
+    {
+        <div class="col-md-6 col-lg-4 mb-4 service-card">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title service-name">@service.ServiceName</h5>
+                    <p class="card-text">Description</p>  <!--There's No Description data-->
+                    <a asp-controller="Service"
+                       asp-action="Providers"
+                       asp-route-serviceId="@service.ServicesId"
+                       class="btn btn-secondary w-100">
+                        Providers
+                    </a>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+@section Scripts {
+    <script>
+        document.getElementById("serviceSearch").addEventListener("input", function () {
+            const query = this.value.toLowerCase();
+            const cards = document.querySelectorAll(".service-card");
 
-<br />
-<input id="myInput" type="text" placeholder="Search..">
-<br />
-<br />
-<table class="table" id="myTable">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.ServiceName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.CreatedAt)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.UpdatedAt)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DeletedAt)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.ServiceName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CreatedAt)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.UpdatedAt)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DeletedAt)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.ServicesId">Edit</a> |
-                <a asp-action="Delete" asp-route-id="@item.ServicesId">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-<script>
-    $(document).ready(function(){
-
-      $("#myInput").on("keyup", function() {
-        var value = $(this).val().toLowerCase();
-        $("#myTable tr").filter(function() {
-          $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+            cards.forEach(card => {
+                const serviceName = card.querySelector(".service-name").innerText.toLowerCase();
+                if (serviceName.includes(query)) {
+                    card.style.display = "block";
+                } else {
+                    card.style.display = "none";
+                }
+            });
         });
-      });
-
-    });
-
-</script>
-
+    </script>
+}
