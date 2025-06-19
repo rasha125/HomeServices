@@ -1,0 +1,171 @@
+﻿@using HomeServices.ViewModels
+@model ServiceProvidersViewModel
+@{
+    ViewData["Title"] = "Providers for " + Model.ServiceName;
+}
+
+<div class="container mt-4">
+    <h2 class="text-center mb-3">Providers <span class="text-primary">@Model.ServiceName</span></h2>
+    <div class="row mb-4">
+        <div class="col-md-6 offset-md-3">
+            <input type="text" id="providerSearch" class="form-control" placeholder="Search providers..." />
+        </div>
+    </div>
+    <div class="row" id="providerCards">
+        @foreach (var provider in Model.ProvidersWithRatings)
+        {
+            <div class="col-md-6 col-lg-4 mb-4 provider-card">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title provider-name">@provider.Provider.User.FirstName @provider.Provider.User.LastName</h5>
+                        <p class="card-subtitle mb-2 text-muted">@Model.ServiceName</p>
+                        <p class="card-text">@provider.Provider.Description</p>
+                        <div>
+                            <strong>Reviews</strong><br />
+                            <div class="star-rating" data-rating="@provider.AverageRating"></div>
+                            <span class="numeric-rating">(@provider.AverageRating.ToString("0.0"))</span>
+                        </div>
+                        <button class="btn btn-primary w-100 mt-3 book-now-btn"
+                                data-provider-id="@provider.Provider.User.Id"
+                                data-provider-name="@provider.Provider.User.FirstName @provider.Provider.User.LastName"
+                                data-service-name="@Model.ServiceName"
+                                data-bs-toggle="modal"
+                                data-bs-target="#bookingModal">
+                            Book Now
+                        </button>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Booking Modal -->
+<div class="modal fade" id="bookingModal" tabindex="-1" aria-labelledby="bookingModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header text-center">
+                <h5 class="modal-title w-100" id="bookingModalLabel">Booking</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="bookingForm" method="post" asp-asp-controller="Order" asp-action="Create">
+                <div class="modal-body">
+                    <input type="hidden" id="providerId" name="ServiceProviderId">
+                    <input type="hidden" id="serviceId" name="ServiceId" value="@Model.ServiceName">
+
+                    <div class="mb-3">
+                        <label for="orderAddress" class="form-label"><strong>Address</strong></label>
+                        <input type="text" class="form-control" id="orderAddress" name="Address" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="orderDescription" class="form-label"><strong>Description</strong></label>
+                        <textarea class="form-control" id="orderDescription" name="Description" rows="3" required></textarea>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="mb-3">
+                                <label for="orderDate" class="form-label"><strong>Date</strong></label>
+                                <input type="date" class="form-control" id="orderDate" name="Date" required>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="mb-3">
+                                <label for="orderTime" class="form-label"><strong>Time</strong></label>
+                                <input type="time" class="form-control" id="orderTime" name="Time" required>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer justify-content-center">
+                    <button type="submit" class="btn btn-primary me-2" style="min-width: 80px;">Book</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="min-width: 80px;">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Search functionality
+        document.getElementById("providerSearch").addEventListener("input", function () {
+            const query = this.value.toLowerCase();
+            const cards = document.querySelectorAll(".provider-card");
+            let visibleCount = 0;
+            cards.forEach(card => {
+                const name = card.querySelector(".provider-name").innerText.toLowerCase();
+                const visible = name.includes(query);
+                card.style.display = visible ? "block" : "none";
+                if (visible) visibleCount++;
+            });
+        });
+
+        // Booking modal functionality
+        document.querySelectorAll('.book-now-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const providerId = this.getAttribute('data-provider-id');
+
+                // Populate modal fields
+                document.getElementById('providerId').value = providerId;
+
+                // Set minimum date to today
+                const today = new Date().toISOString().split('T')[0];
+                document.getElementById('bookingDate').min = today;
+            });
+        });
+
+        // Form validation
+        document.getElementById('bookingForm').addEventListener('submit', function(e) {
+            const name = document.getElementById('customerName').value.trim();
+            const date = document.getElementById('bookingDate').value;
+            const time = document.getElementById('bookingTime').value;
+            const address = document.getElementById('customerAddress').value.trim();
+            const description = document.getElementById('problemDescription').value.trim();
+
+            if (!name || !date || !time || !address || !description) {
+                e.preventDefault();
+                alert('Please fill in all required fields.');
+                return false;
+            }
+
+            // Validate date is not in the past
+            const selectedDate = new Date(date);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            if (selectedDate < today) {
+                e.preventDefault();
+                alert('Please select a future date.');
+                return false;
+            }
+        });
+    </script>
+}
+
+<style>
+                .star-rating {
+    --star-size: 20px;
+    --rating: 0;
+    display: inline-block;
+    font-size: var(--star-size);
+    font-family: "Font Awesome 5 Free"; 
+    position: relative;
+    line-height: 1;
+}
+
+.star-rating::before {
+    content: "★★★★★";
+    letter-spacing: 3px;
+    background: linear-gradient(90deg, gold calc(var(--rating) * 20%), #ccc calc(var(--rating) * 20%));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.numeric-rating {
+    margin-left: 8px;
+    font-weight: bold;
+    color: #444;
+}
+</style>

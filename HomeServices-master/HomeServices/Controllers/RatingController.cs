@@ -23,7 +23,7 @@ namespace HomeServices.Controllers
             try
             {
                 _rep.Add(collection);
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Orders","Person");
             }
             catch
             {

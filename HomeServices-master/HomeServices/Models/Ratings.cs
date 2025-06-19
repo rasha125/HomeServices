@@ -10,6 +10,8 @@
 
         public int OrdersId { get; set; }
         public int PersonsId { get; set; } // User who provided the rating
+
+        public Orders Orders { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;

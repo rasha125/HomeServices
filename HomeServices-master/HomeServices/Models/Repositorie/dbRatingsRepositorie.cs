@@ -1,4 +1,6 @@
 ﻿
+using Microsoft.EntityFrameworkCore;
+
 namespace HomeServices.Models.Repositorie
 {
     public class dbRatingsRepositorie : IRepositorie<Ratings , int>
@@ -33,7 +35,7 @@ namespace HomeServices.Models.Repositorie
 
         public IList<Ratings> View()
         {
-            return db.Ratings.ToList();
+          return  db.Ratings.Include(x => x.Orders).ToList();
         }
     }
 }

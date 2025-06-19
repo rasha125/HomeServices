@@ -143,5 +143,23 @@ namespace HomeServices.Controllers
 
         }
 
+        [Authorize(Roles = "Client")]
+        public ActionResult Orders()
+        {
+            var userName = _httpContextAccessor.HttpContext.User.Identity.Name;
+
+            var orders = _orderRep.View()
+                .Where(o => o.Persons.User.UserName == userName)
+                .ToList();
+
+
+            var model = new VMPersonIndex
+            {
+                MyOrders = orders
+            };
+
+            return View(model);
+        }
+
     }
 }

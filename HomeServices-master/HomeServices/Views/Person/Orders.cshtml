@@ -1,0 +1,164 @@
+﻿
+
+@{
+    ViewData["Title"] = "Order Management";
+}
+
+<h2 class="text-center mt-3">Order management</h2>
+
+<!-- Search -->
+<div class="mb-3">
+    <label for="search" class="form-label">Search</label>
+    <input type="text" id="searchInput" class="form-control" placeholder="Search..." />
+</div>
+
+<!-- Orders Table -->
+<table class="table table-bordered" id="ordersTable">
+    <thead class="table-light">
+        <tr>
+            <th>Order id</th>
+            <th>Provider</th>
+            <th>Service</th>
+            <th>Date</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var order in Model)
+        {
+            <tr>
+                <td>@order.OrdersId</td>
+                <td>@order.Providers.User.FirstName @order.Providers.User.LastName</td>
+                <td>@order.Providers.Services.ServiceName</td>
+                <td>@order.Date.ToString("yyyy-MM-dd")</td>
+                <td>
+                    <div class="dropdown">
+                        <button class="btn btn-link dropdown-toggle text-primary" type="button" data-bs-toggle="dropdown">
+                            Actions
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a class="dropdown-item rate-btn"
+                                   href="#"
+                                   data-bs-toggle="modal"
+                                   data-bs-target="#rateModal"
+                                   data-order-id="@order.OrdersId"
+                                   data-provider="@order.Providers.User.FirstName @order.Providers.User.LastName"
+                                   data-service="@order.Providers.Services.ServiceName">
+                                    Rate
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item report-btn"
+                                   href="#"
+                                   data-bs-toggle="modal"
+                                   data-bs-target="#reportModal"
+                                   data-order-id="@order.OrdersId"
+                                   data-provider="@order.Providers.User.FirstName @order.Providers.User.LastName"
+                                   data-service="@order.Providers.Services.ServiceName">
+                                    Report Issue
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- Rate Modal -->
+<div class="modal fade" id="rateModal" tabindex="-1" aria-labelledby="rateModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="rateForm" method="post" asp-controller="Rating" asp-action="Create">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="rateModalLabel">Rate the Service Provider</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="rateComments" class="form-label">Comments</label>
+                        <textarea class="form-control" id="rateComments" name="Comment" rows="3"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Rating</label><br />
+                        @for (int i = 1; i <= 5; i++)
+                        {
+                            <input type="radio" id="star@i" name="RatingValue" value=@i />
+                            <label for="star@i" style="font-size: 24px; color: gold;">★</label>
+                        }
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-dark">Submit</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Report Modal -->
+<div class="modal fade" id="reportModal" tabindex="-1" aria-labelledby="reportModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="reportForm" method="post" asp-controller="" asp-action="">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="reportModalLabel">Report Issue - <span id="reportServiceName"></span></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label>Service Provider:</label>
+                        <p id="reportProviderName" class="fw-bold"></p>
+                    </div>
+                    <div class="mb-3">
+                        <label for="issueType" class="form-label">Issue Type:</label>
+                        <select id="issueType" class="form-select">
+                            <option>-- Select Issue Type --</option>
+                            <option>Delay</option>
+                            <option>Poor Quality</option>
+                            <option>Wrong Service</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="issueDescription" class="form-label">Issue Description:</label>
+                        <textarea id="issueDescription" class="form-control" placeholder="Describe the issue here..."></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="issueFile" class="form-label">Attach File (optional):</label>
+                        <input type="file" id="issueFile" class="form-control" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Filtering table rows by search input
+        document.getElementById("searchInput").addEventListener("keyup", function () {
+            let filter = this.value.toLowerCase();
+            let rows = document.querySelectorAll("#ordersTable tbody tr");
+            rows.forEach(row => {
+                row.style.display = row.innerText.toLowerCase().includes(filter) ? "" : "none";
+            });
+        });
+
+      
+
+        // Fill data in Report Modal
+        document.querySelectorAll(".report-btn").forEach(btn => {
+            btn.addEventListener("click", function () {
+                document.getElementById("reportProviderName").innerText = this.dataset.provider;
+                document.getElementById("reportServiceName").innerText = this.dataset.service;
+            });
+        });
+    </script>
+}
