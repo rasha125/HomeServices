@@ -1,0 +1,40 @@
+﻿@model List<HomeServices.Models.Messages>
+
+@{
+    var currentUserId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+    var receiverId = ViewBag.ReceiverId as string;
+
+
+
+}
+<div class="chat-card">
+    <div class="chat-header">@ViewBag.ReceiverName</div>
+
+    <div class="chat-window d-flex flex-column">
+        @foreach (var msg in Model)
+        {
+            if (msg.SenderId == currentUserId)
+            {
+                <div class="chat-message you">
+                    <strong>You:</strong> @msg.Content
+                </div>
+            }
+            else
+            {
+                <div class="chat-message other">
+                    <strong>@msg.Sender.FirstName:</strong> @msg.Content
+                </div>
+            }
+        }
+    </div>
+
+    <form asp-controller="Message" asp-action="Send" method="post">
+        <input type="hidden" name="receiverId" value="@receiverId" />
+        <div class="chat-input">
+            <textarea name="content" placeholder="Type your message..." required></textarea>
+            <button type="submit" title="Send">
+                <i class="bi bi-send-fill"></i>
+            </button>
+        </div>
+    </form>
+</div>

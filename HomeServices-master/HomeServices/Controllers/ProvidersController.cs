@@ -323,6 +323,32 @@ namespace HomeServices.Controllers
             var data = _rep.Find(id);
             return View(data);
         }
+
+
+
+
+        public ActionResult ListOfPersons()
+        {
+            var currentUserId = _userManager.GetUserId(User);
+
+            var lastMessages = _context.Messages
+                .Where(m => m.ReceiverId == currentUserId || m.SenderId == currentUserId)
+                .OrderByDescending(m => m.SentAt)
+                .ToList()
+                .GroupBy(m => m.SenderId == currentUserId ? m.ReceiverId : m.SenderId)
+                .Select(g => g.First())
+                .ToList();
+
+            int newMessagesCount = lastMessages.Count(m => m.SenderId != currentUserId);
+
+            ViewBag.NewMessagesCount = newMessagesCount;
+
+
+
+
+            var Persons = _context.Persons.Include(p => p.User).ToList();
+            return View(Persons);
+        }
     }
 
 

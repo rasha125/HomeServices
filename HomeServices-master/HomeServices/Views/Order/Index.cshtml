@@ -6,10 +6,12 @@
 }
 
 <h1>Index</h1>
-
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
+@if (!User.IsInRole("Admin"))
+{
+    <p>
+        <a asp-action="Create">Create New</a>
+    </p>
+}
 <table class="table">
     <thead>
         <tr>
@@ -68,12 +70,12 @@
                 @Html.DisplayFor(modelItem => item.Status)
             </td>
            
-            <td>
-                @Html.DisplayFor(modelItem => item.Providers.ProvidersId)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Persons.UserId)
-            </td>
+                <td>
+                    @item.Providers.User.FirstName @item.Providers.User.LastName
+                </td>
+                <td>
+                    @item.Persons.User.FirstName @item.Persons.User.LastName
+                </td>
             <td>
                 @Html.DisplayFor(modelItem => item.CreatedAt)
             </td>

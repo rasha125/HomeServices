@@ -30,7 +30,7 @@ namespace HomeServices.Controllers
             try
             {
                 _rep.Add(collection);
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(IndexServices));
             }
             catch
             {
@@ -52,13 +52,33 @@ namespace HomeServices.Controllers
             try
             {
                 _rep.Update(id , collection);
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(IndexServices));
             }
             catch
             {
                 return View();
             }
         }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult DeleteConfirmed(int id)
+        {
+            try
+            {
+                var service = _rep.Find(id);
+                if (service == null)
+                    return NotFound();
+
+                _rep.Delete(id, service);
+                return RedirectToAction(nameof(IndexServices));
+            }
+            catch
+            {
+                return View();
+            }
+        }
+
+
 
         // GET: ServicesController/Delete/5
         public ActionResult Delete(int id)
@@ -93,8 +113,12 @@ namespace HomeServices.Controllers
             var services = _rep.View().ToList();
             return View(services);
         }
+        public ActionResult IndexServices()
+        {
+            var services = _rep.View().ToList();
+            return View(services);
+        }
 
-        
         public ActionResult Providers(int serviceId)
         {
             var service = _rep.Find(serviceId);

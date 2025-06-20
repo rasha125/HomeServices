@@ -1,20 +1,24 @@
-﻿namespace HomeServices.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace HomeServices.Models
 {
     public class Messages
     {
-        public int MessagesId { get; set; }
+        public int Id { get; set; }
 
-        public int SenderId { get; set; }
+        [Required]
+        public string SenderId { get; set; }
 
-        public int ReceiverId { get; set; }
+        public Users Sender { get; set; }
 
-        public Users Users { get; set; }
+        [Required]
+        public string ReceiverId { get; set; }
 
+        public Users Receiver { get; set; }
+
+        [Required]
         public string Content { get; set; }
 
         public DateTime SentAt { get; set; } = DateTime.UtcNow;
-        public bool IsRead { get; set; } = false;
-        public DateTime? ReadAt { get; set; }
-
     }
 }

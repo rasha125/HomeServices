@@ -160,7 +160,7 @@ namespace HomeServices.Controllers
                 var role = ((UserRole)user.RoleId).ToString();
 
                 if (role == "Admin")
-                    return RedirectToAction("Index", "Admin");
+                    return RedirectToAction("dashboard", "Admin");
                 else if (role == "Provider")
                     return RedirectToAction("dashboard", "Provider");
                 else

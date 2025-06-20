@@ -1,24 +1,89 @@
-﻿@{
+﻿@model HomeServices.Models.Persons
+
+@{
     ViewData["Title"] = "Profile";
     Layout = "~/Views/_Layout.cshtml";
 }
-<a asp-action="Login" asp-controller="Users" class="btn btn-danger">Logout</a>
 
-<img src="@Model.PersonInfo.User.ImagePath" alt="Profile Page">
+<div class="container d-flex flex-column justify-content-center align-items-center" style="min-height: 80vh; max-width: 600px;">
+    <form asp-action="EditProfile" method="post" enctype="multipart/form-data" id="profileForm" class="profile-form w-100">
 
-<h2>مرحبًا، @Model.PersonInfo.User.FirstName @Model.PersonInfo.User.LastName</h2>
+        <input type="hidden" name="PersonsId" value="@Model.PersonsId" />
 
-<ul class="list-group mb-4">
-    <!-- Can't find the values -->
-    <li>
-        <span>Email</span>
-    </li>
-    <li>
-        <span>Phone</span>  
-    </li>
-    <li>
-        <span>Address</span>
-    </li>
-    
-</ul>
+        <!-- صورة المستخدم -->
+        <div class="mb-3 d-flex justify-content-center">
+            <div class="profile-photo mb-2">
+                @if (!string.IsNullOrEmpty(Model.User.ImagePath))
+                {
+                    <img src="~/uploads/@Model.User.ImagePath" alt="Profile Image" class="profile-img rounded-circle" style="max-width:150px; max-height:150px; object-fit:cover;" />
+                }
+                else
+                {
+                    <i class="bi bi-person-circle text-secondary d-flex justify-content-center align-items-center"
+                       style="font-size: 150px; width: 150px; height: 150px; border-radius: 50%; background-color: #f0f0f0;"></i>
+                }
+            </div>
+        </div>
 
+        <!-- الاسم -->
+        <h3 class="text-center mb-4 fw-bold">
+            <span id="nameDisplay">@Model.User.FirstName @Model.User.LastName</span>
+        </h3>
+
+        <!-- الحقول -->
+        <div class="mb-3 d-flex gap-2">
+            <input type="text" name="User.FirstName" value="@Model.User.FirstName" readonly class="form-control" />
+            <input type="text" name="User.LastName" value="@Model.User.LastName" readonly class="form-control" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Email</label>
+            <input type="email" value="@Model.User.Email" readonly class="form-control bg-light" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Phone Number</label>
+            <input type="text" name="User.PhoneNumber" value="@Model.User.PhoneNumber" readonly class="form-control" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">City</label>
+            <input type="text" name="User.City" value="@Model.User.City" readonly class="form-control" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Country</label>
+            <input type="text" name="User.Country" value="@Model.User.Country" readonly class="form-control" />
+        </div>
+
+        <!-- الأزرار -->
+        <div class="d-flex justify-content-between">
+            <button type="button" id="editBtn" class="btn btn-outline-primary">Edit</button>
+            <button type="submit" id="saveBtn" class="btn btn-success d-none">Save</button>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        document.getElementById("editBtn").addEventListener("click", function () {
+            const form = document.getElementById("profileForm");
+            const inputs = form.querySelectorAll("input");
+
+            inputs.forEach(input => {
+                if (input.name && input.type !== "hidden" && input.name !== "User.Email") {
+                    input.removeAttribute("readonly");
+                }
+            });
+
+            document.getElementById("saveBtn").classList.remove("d-none");
+            this.classList.add("d-none");
+        });
+    </script>
+
+    <style>
+        .profile-photo img.profile-img {
+            border-radius: 50%;
+        }
+    </style>
+}

@@ -1,0 +1,67 @@
+﻿
+
+@model List<HomeServices.Models.Providers>
+
+<h2 class="text-center mb-4">Service Providers</h2>
+<div class="row mb-4">
+    <div class="col-md-10 text-center">
+        <input id="myInput" type="text" class="form-control w-75 mx-auto" placeholder="Search by name...">
+    </div>
+    <div class="col-md-2 text-end pe-4">
+
+        <a asp-controller="Message" asp-action="Inbox" class="position-relative text-dark" style="font-size: 24px;">
+            <i class="bi bi-chat-fill"></i>
+            @if (ViewBag.NewMessagesCount > 0)
+            {
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                    @ViewBag.NewMessagesCount
+                </span>
+            }
+        </a>
+    </div>
+
+
+
+</div>
+
+<div class="row" id="providerList">
+    @foreach (var provider in Model)
+    {
+        <div class="simple-card">
+            <p class="text-start fs-4 d-flex align-items-center">
+                <i class="bi bi-person-fill text-primary fs-2 me-2"></i>
+                @provider.User.FirstName @provider.User.LastName
+            <p><strong>City:</strong> @provider.User.City</p>
+            <p><strong>Country:</strong> @provider.User.Country</p>
+            </p>
+
+
+            
+
+            <div class="text-center">
+                <a asp-controller="Message"
+                   asp-action="Chat"
+                   asp-route-receiverId="@provider.User.Id"
+                   class="custom-btn">
+                    Open Chat <i class="bi bi-chat-fill ms-2"></i>
+                </a>
+            </div>
+
+
+        </div>
+    }
+
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $("#myInput").on("keyup", function () {
+            var value = $(this).val().toLowerCase();
+            $(".simple-card").each(function () {
+                var name = $(this).data("name");
+                $(this).toggle(name.indexOf(value) > -1);
+            });
+        });
+    });
+</script>

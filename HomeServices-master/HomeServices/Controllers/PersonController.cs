@@ -19,7 +19,7 @@ namespace HomeServices.Controllers
         private readonly IRepositorie<Persons, int> _rep;
         private readonly IRepositorie<Providers, int> _providerRep;
         private readonly IRepositorie<Orders, int> _orderRep;
-       
+
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly UserManager<Users> _userManager;
         private readonly AppDBContext _context;
@@ -53,6 +53,27 @@ namespace HomeServices.Controllers
             }
         }
 
+        [HttpPost]
+        [Authorize(Roles = "Client")]
+        public async Task<IActionResult> EditProfile(Persons model)
+        {
+            var user = await _userManager.FindByNameAsync(User.Identity.Name);
+            if (user == null) return NotFound();
+
+            // تحديث البيانات
+            user.FirstName = model.User.FirstName;
+            user.LastName = model.User.LastName;
+            user.PhoneNumber = model.User.PhoneNumber;
+            user.Email = model.User.Email;
+            user.City = model.User.City;
+            user.Country = model.User.Country;
+
+            await _userManager.UpdateAsync(user);
+
+            return RedirectToAction("Profile");
+        }
+
+
         [Authorize(Roles = "Admin")]
         public IActionResult Index()
         {
@@ -60,13 +81,13 @@ namespace HomeServices.Controllers
             return View(data);
         }
 
-     
+
         public ActionResult Edit(int id)
         {
             var data = _rep.Find(id);
             return View(data);
         }
-     
+
 
 
         [HttpPost]
@@ -166,6 +187,32 @@ namespace HomeServices.Controllers
 
             return View(model);
         }
+
+
+        public ActionResult ListOfProvider()
+        {
+            var currentUserId = _userManager.GetUserId(User);
+
+            var lastMessages = _context.Messages
+                .Where(m => m.ReceiverId == currentUserId || m.SenderId == currentUserId)
+                .OrderByDescending(m => m.SentAt)
+                .ToList()
+                .GroupBy(m => m.SenderId == currentUserId ? m.ReceiverId : m.SenderId)
+                .Select(g => g.First())
+                .ToList();
+
+            int newMessagesCount = lastMessages.Count(m => m.SenderId != currentUserId);
+
+            ViewBag.NewMessagesCount = newMessagesCount;
+
+
+
+
+            var providers = _context.Providers.Include(p => p.User).ToList();
+            return View(providers);
+        }
+
+
 
     }
 }

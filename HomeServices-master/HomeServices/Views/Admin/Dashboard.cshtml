@@ -1,0 +1,30 @@
+﻿@{
+    ViewData["Title"] = "Admin Dashboard";
+    Layout = "~/Views/_Layout.cshtml";
+}
+
+<h2 class="mb-4">مرحبًا، Admin</h2>
+
+<h3 class="my-3">System Stats</h3>
+<ul class="list-group mb-4">
+    <li class="list-group-item d-flex justify-content-between">
+        <span>Total Users</span>
+        <span class="badge bg-primary">@ViewBag.UserCount</span>
+    </li>
+    <li class="list-group-item d-flex justify-content-between">
+        <span>Total Persons</span>
+        <span class="badge bg-primary">@ViewBag.PersonCount</span>
+    </li>
+    <li class="list-group-item d-flex justify-content-between">
+        <span>Total Providers</span>
+        <span class="badge bg-primary">@ViewBag.ProviderCount</span>
+    </li>
+    <li class="list-group-item d-flex justify-content-between">
+        <span>Total Orders</span>
+        <span class="badge bg-primary">@ViewBag.orderCount</span>
+    </li>
+    <li class="list-group-item d-flex justify-content-between">
+        <span>Total Issues</span>
+        <span class="badge bg-primary">@ViewBag.issueCount</span>
+    </li>
+</ul>

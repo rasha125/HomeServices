@@ -18,27 +18,44 @@ namespace HomeServices.Models
         public DbSet<Persons> Persons { get; set; }
         public DbSet<Providers> Providers { get; set; }
         public DbSet<Ratings> Ratings { get; set; }
+        public DbSet<Messages> Messages { get; set; }
+       
+
+        public DbSet<Users> Users { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<Orders>()
-                .HasOne(o => o.Providers)
+            modelBuilder.Entity<Messages>()
+                .HasOne(m => m.Sender)
                 .WithMany()
-                .HasForeignKey(o => o.ProviderId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .HasForeignKey(m => m.SenderId)
+                .OnDelete(DeleteBehavior.Restrict); // ❗️مهم جداً
+
+            modelBuilder.Entity<Messages>()
+                .HasOne(m => m.Receiver)
+                .WithMany()
+                .HasForeignKey(m => m.ReceiverId)
+                .OnDelete(DeleteBehavior.Restrict); // ❗️كمان
+
+            modelBuilder.Entity<Orders>()
+              .HasOne(o => o.Providers)
+              .WithMany()
+              .HasForeignKey(o => o.ProviderId)
+              .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Orders>()
                 .HasOne(o => o.Persons)
                 .WithMany()
                 .HasForeignKey(o => o.PersonId)
-                .OnDelete(DeleteBehavior.Restrict);  
+                .OnDelete(DeleteBehavior.Restrict);
+
+
+
+
+
         }
-
-
-
-
-
     }
 }

@@ -45,22 +45,31 @@ namespace HomeServices.Controllers
             var data = _rep.View().ToList();
             return View(data);
         }
-
-        [Authorize(Roles = "Provider")]
-        [HttpGet]
-        public IActionResult ProviderIssue()
-        {
-            return View();
-        }
-
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ProviderIssue(VMIssue model)
+        public async Task<IActionResult> ProviderIssue(VMIssue model, IFormFile uploadedFile)
         {
             if (!ModelState.IsValid)
                 return View(model);
-            // الحصول على المستخدم الحالي
+
             var userId = _userManager.GetUserId(User);
+            string uniqueFileName = null;
+
+            // حفظ الملف في مجلد wwwroot/uploads
+            if (uploadedFile != null && uploadedFile.Length > 0)
+            {
+                var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
+                if (!Directory.Exists(uploadsFolder))
+                    Directory.CreateDirectory(uploadsFolder);
+
+                uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(uploadedFile.FileName);
+                var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                {
+                    await uploadedFile.CopyToAsync(fileStream);
+                }
+            }
 
             // إنشاء البلاغ
             var issue = new Issues
@@ -68,6 +77,7 @@ namespace HomeServices.Controllers
                 Type = model.Type,
                 Description = model.Description,
                 UserId = userId,
+                File = uniqueFileName, // اسم الملف إذا تم رفعه
                 Status = ReportStatus.InProgress,
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow
@@ -79,6 +89,8 @@ namespace HomeServices.Controllers
             TempData["Message"] = "Issue submitted successfully.";
             return RedirectToAction("ProviderIssue");
         }
+
+
         // GET: IssuesController/Edit/5
         public ActionResult Edit(int id)
         {
@@ -127,5 +139,74 @@ namespace HomeServices.Controllers
             var data = _rep.Find(id);
             return View(data);
         }
+
+        [HttpPost]
+        [Authorize(Roles = "Admin")]
+        public IActionResult ChangeStatus(int id)
+        {
+            var issue = _context.Issues.Find(id);
+            if (issue != null && issue.Status != ReportStatus.Closed)
+            {
+                issue.Status = ReportStatus.Closed;
+                issue.UpdatedAt = DateTime.UtcNow;
+                _context.SaveChanges();
+            }
+
+            return RedirectToAction("Index");
+        }
+
+
+
+
+
+        [HttpGet]
+        [Authorize(Roles = "Provider,Client")]
+        public IActionResult SentIssue()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Provider,Client")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SentIssue(VMIssue model)
+        {
+            if (!ModelState.IsValid)
+                return View(model);
+            // الحصول على المستخدم الحالي
+            var userId = _userManager.GetUserId(User);
+
+            // إنشاء البلاغ
+            var issue = new Issues
+            {
+                Type = model.Type,
+                Description = model.Description,
+                UserId = userId,
+                Status = ReportStatus.InProgress,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
+            };
+
+            _context.Issues.Add(issue);
+            await _context.SaveChangesAsync();
+
+            TempData["Message"] = "Issue submitted successfully.";
+            if (User.IsInRole("Client"))
+            {
+                return RedirectToAction("Dashboard", "Person"); // أو الصفحة المناسبة للعميل
+            }
+            else if (User.IsInRole("Provider"))
+            {
+                return RedirectToAction("Dashboard", "Provider"); // أو أي صفحة رئيسية للمزود
+            }
+
+
+            return RedirectToAction("Index", "Home");
+
+
+        }
+
+
+
     }
 }

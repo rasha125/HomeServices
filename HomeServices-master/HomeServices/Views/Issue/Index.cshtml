@@ -1,102 +1,66 @@
 ﻿@model IEnumerable<HomeServices.Models.Issues>
-
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Report Issues";
 }
 
-<h1>Report Issue</h1>
+<h2 class="mb-4">Report Issues</h2>
 
-<br />
-<input id="myInput" type="text" placeholder="Search..">
-<br />
-<br />
-<table class="table" id="myTable">
+<input id="myInput" type="text" class="form-control mb-3 w-50" placeholder="Search by name or type..." />
 
-    <thead>
+<table class="table table-bordered table-striped" id="myTable">
+    <thead class="table-dark">
         <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.User.FirstName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.User.LastName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Type)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Description)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.File)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Status)
-            </th>
-
-            <th>
-                @Html.DisplayNameFor(model => model.CreatedAt)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.UpdatedAt)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DeletedAt)
-            </th>
-            <th></th>
+            <th>User</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>File</th>
+            <th>Status</th>
+            <th>Created At</th>
+            <th>Actions</th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.User.FirstName @item.User.LastName</td>
+                <td>@item.Type</td>
+                <td>@item.Description</td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.User.FirstName)
+                    @if (!string.IsNullOrEmpty(item.File))
+                    {
+                        <a href="~/uploads/@item.File" target="_blank">View</a>
+                    }
+                    else
+                    {
+                        <span>No file</span>
+                    }
                 </td>
+                <td>@item.Status</td>
+                <td>@item.CreatedAt.ToLocalTime().ToString("yyyy-MM-dd HH:mm")</td>
+                <td class="d-flex gap-2">
+                    @if (item.Status != HomeServices.Enums.ReportStatus.Closed)
+                    {
+                        <form asp-action="ChangeStatus" asp-route-id="@item.IssuesId" method="post">
+                            <button type="submit" class="btn btn-sm btn-warning">Close</button>
+                        </form>
+                    }
 
-
-                <td>
-                    @Html.DisplayFor(modelItem => item.User.LastName)
+                    
                 </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Type)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Description)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.File)
-            </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Status)
-                </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CreatedAt)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.UpdatedAt)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DeletedAt)
-            </td>
-            <td>
-               
-                <a asp-action="Delete" asp-route-id="@item.IssuesId">Delete</a>
-            </td>
-        </tr>
-}
+            </tr>
+        }
     </tbody>
 </table>
+
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <script>
-    $(document).ready(function(){
-
-      $("#myInput").on("keyup", function() {
-        var value = $(this).val().toLowerCase();
-        $("#myTable tr").filter(function() {
-          $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+    $(document).ready(function () {
+        $("#myInput").on("keyup", function () {
+            var value = $(this).val().toLowerCase();
+            $("#myTable tbody tr").filter(function () {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+            });
         });
-      });
-
     });
-
 </script>
-

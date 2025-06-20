@@ -1,0 +1,62 @@
+﻿
+
+@model List<HomeServices.Models.Persons>
+
+<h2>Clients</h2>
+<br />
+<div class="row mb-4">
+    <div class="col-md-10 text-center">
+        <input id="myInput" type="text" class="form-control w-75 mx-auto" placeholder="Search by name...">
+    </div>
+<div class="col-md-2 text-end pe-4">
+
+    <a asp-controller="Message" asp-action="Inbox" class="position-relative text-dark" style="font-size: 24px;">
+        <i class="bi bi-chat-fill"></i>
+        @if (ViewBag.NewMessagesCount > 0)
+        {
+            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                @ViewBag.NewMessagesCount
+            </span>
+        }
+    </a>
+</div>
+</div>
+
+    <div class="row" id="clientList">
+
+@foreach (var client in Model)
+{
+        <div class="simple-card" data-name="@($"{client.User.FirstName} {client.User.LastName}".ToLower())">
+            <p class="text-start fs-4 d-flex align-items-center">
+                <i class="bi bi-person-fill text-primary fs-2 me-2"></i>
+                @client.User.FirstName @client.User.LastName
+            </p>
+
+
+            <div class="text-center">
+                <a asp-controller="Message"
+                   asp-action="Chat"
+                   asp-route-receiverId="@client.User.Id"
+                   class="custom-btn">
+                    Open Chat <i class="bi bi-chat-fill ms-2"></i>
+                </a>
+            </div>
+        </div>
+
+
+    
+    
+}
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $("#myInput").on("keyup", function () {
+            var value = $(this).val().toLowerCase();
+                $(".simple-card").each(function () {
+                var name = $(this).data("name");
+                $(this).toggle(name.indexOf(value) > -1);
+            });
+        });
+    });
+</script>
