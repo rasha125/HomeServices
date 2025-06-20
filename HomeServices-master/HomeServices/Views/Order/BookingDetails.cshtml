@@ -1,0 +1,114 @@
+﻿@model HomeServices.ViewModels.VMCompletedOrder
+
+@{
+    ViewData["Title"] = "Booking Details";
+    Layout = "~/Views/_Layout.cshtml";
+}
+
+<div class="container mt-5">
+    <h2 class="mb-4">Booking Details</h2>
+
+    <div class="card-body">
+        <div class="booking-details-list">
+
+            <!-- Order ID -->
+            <div class="detail-item">
+                <div class="detail-label">
+                    <i class="fi fi-rr-hashtag"></i> Order ID
+                </div>
+                <div class="detail-value">
+                    @Model.OrderId
+                </div>
+            </div>
+
+            <!-- Date -->
+            <div class="detail-item">
+                <div class="detail-label">
+                    <i class="fi fi-rr-calendar"></i> Date
+                </div>
+                <div class="detail-value">
+                    @Model.OrdersDate.ToString("dd-MMM-yyyy")
+                </div>
+            </div>
+
+            <!-- Time -->
+            <div class="detail-item">
+                <div class="detail-label">
+                    <i class="fi fi-rr-clock-three"></i> Time
+                </div>
+                <div class="detail-value">
+                    @Model.OrdersTime.ToString("hh:mm tt")
+                </div>
+            </div>
+
+            <!-- Service -->
+            <div class="detail-item">
+                <div class="detail-label">
+                    <i class="fi fi-rr-briefcase"></i> Service
+                </div>
+                <div class="detail-value">
+                    @Model.ServiceName
+                </div>
+            </div>
+
+            <!-- Provider -->
+            <div class="detail-item">
+                <div class="detail-label">
+                    <i class="fi fi-rr-user-md"></i> Provider
+                </div>
+                <div class="detail-value">
+                    @Model.ProviderName
+                </div>
+            </div>
+
+            <!-- Client -->
+            <div class="detail-item">
+                <div class="detail-label">
+                    <i class="fi fi-rr-user"></i> Client
+                </div>
+                <div class="detail-value">
+                    @Model.PersonName
+                </div>
+            </div>
+
+            <!-- Address -->
+            <div class="detail-item">
+                <div class="detail-label">
+                    <i class="fi fi-rr-marker"></i> Address
+                </div>
+                <div class="detail-value">
+                    @Model.Address
+                    @if (!string.IsNullOrEmpty(Model.MapUrl))
+                    {
+                        <a href="@Model.MapUrl" target="_blank" class="map-link">
+                            <i class="fi fi-rr-map-marker"></i> Map
+                        </a>
+                    }
+                </div>
+            </div>
+
+            <!-- Description -->
+            <div class="detail-item">
+                <div class="detail-label">
+                    <i class="fi fi-rr-comment-alt"></i> Description
+                </div>
+                <div class="detail-value">
+                    @Model.Description
+                </div>
+            </div>
+
+            <!-- Status -->
+            <div class="detail-item">
+                <div class="detail-label">
+                    <i class="fi fi-rr-info"></i> Status
+                </div>
+                <div class="detail-value">
+                    @(string.IsNullOrEmpty(Model.Status) ? "Pending" : Model.Status)
+                </div>
+            </div>
+        </div>
+
+        <a href="@Url.Action("CompletedOrders")" class="btn btn-secondary mt-4">Back to Orders</a>
+    </div>
+    </div>
+

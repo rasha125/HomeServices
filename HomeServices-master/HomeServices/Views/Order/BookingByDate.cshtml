@@ -1,0 +1,164 @@
+﻿@model List<HomeServices.Models.Orders>
+
+@{
+    ViewData["Title"] = "Booking";
+    Layout = "~/Views/_Layout.cshtml";
+}
+
+<h2 id="date-title" class="title">📅 Bookings for @ViewBag.SelectedDate</h2>
+<div class="timeline-container" id="timeline"></div>
+
+@section Scripts {
+    <script>
+        const bookings = [];
+
+        @foreach (var order in Model)
+        {
+            var time = order.OrdersTime.ToString("hh:mm tt");
+            var client = order.Persons?.User?.FirstName ?? "Unknown";
+            var service = order.Providers?.Services?.ServiceName ?? "Service";
+            var location = order.Address;
+            var status = order.Status ?? "InProgress";
+            var map = order.MapUrl;
+            var id = order.OrdersId;
+            var date = order.OrdersDate.ToString("yyyy-MM-dd");
+
+            <text>
+                    bookings.push({
+                        id: @id,
+                        time: "@time",
+                        name: "@client",
+                        service: "@service",
+                        location: "@location",
+                        status: "@status",
+                        map: "@map",
+                        date: "@date"
+                    });
+            </text>
+        }
+
+        const container = document.getElementById("timeline");
+        document.getElementById("date-title").innerText = `📅 Bookings for @ViewBag.SelectedDate`;
+
+        if (bookings.length === 0) {
+            container.innerHTML = `<p style='text-align:center;'>No bookings for this day.</p>`;
+        } else {
+            const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+
+            bookings.forEach((b) => {
+                const item = document.createElement("div");
+                item.className = "timeline-item";
+                if (b.status === "Completed") item.classList.add("completed");
+                if (b.status === "Cancelled") item.classList.add("cancelled");
+
+                let actionsHtml = '';
+                if (b.status === 'Completed') {
+                    actionsHtml = '<span style="color:#28a745;">Completed</span>';
+                } else if (b.status === 'Cancelled') {
+                    actionsHtml = '<span style="color:#dc3545;">Cancelled</span>';
+                } else {
+                    const completeDisabled = b.date > today ? 'disabled' : '';
+
+                    actionsHtml = `
+                        <button class="small-btn cancel cancel-btn">Cancel</button>
+                        <button class="small-btn complete complete-btn" ${completeDisabled}>Complete</button>
+                    `;
+                }
+
+                item.innerHTML = `
+                    <div class="booking-header">
+                        <div>
+                            <strong>${b.time} - ${b.name} - ${b.service}</strong>
+                            <div>${b.location}</div>
+                            ${b.map ? `<a href="${b.map}" target="_blank">📍 Open Map</a>` : ''}
+                        </div>
+                        <div class="booking-actions">
+                            ${actionsHtml}
+                        </div>
+                    </div>
+                    <div class="confirm-frame" style="display:none;">
+                        <p>Are you sure you want to cancel this booking?</p>
+                        <button class="small-btn cancel yes-cancel">Yes</button>
+                        <button class="small-btn complete no-cancel">No</button>
+                    </div>
+                `;
+
+                container.appendChild(item);
+
+                if (b.status !== 'Completed' && b.status !== 'Cancelled') {
+                    const cancelBtn = item.querySelector('.cancel-btn');
+                    const completeBtn = item.querySelector('.complete-btn');
+                    const yesCancel = item.querySelector('.yes-cancel');
+                    const noCancel = item.querySelector('.no-cancel');
+                    const frame = item.querySelector('.confirm-frame');
+
+                    cancelBtn?.addEventListener('click', () => {
+                        frame.style.display = 'block';
+                    });
+
+                    noCancel?.addEventListener('click', () => {
+                        frame.style.display = 'none';
+                    });
+
+                    yesCancel?.addEventListener('click', () => {
+                        fetch('/Order/UpdateStatus', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'RequestVerificationToken': getCsrfToken()
+                            },
+                            body: JSON.stringify({ id: b.id, status: 'Cancelled' })
+                        })
+                        .then(response => {
+                            if (response.ok) {
+                                item.classList.remove('completed');
+                                item.classList.add('cancelled');
+                                frame.style.display = 'none';
+                                item.querySelector('.booking-actions').innerHTML = '<span style="color:#dc3545;">Cancelled</span>';
+                            } else {
+                                alert('Failed to update status.');
+                            }
+                        });
+                    });
+
+                    completeBtn?.addEventListener('click', () => {
+                        if (completeBtn.disabled) return;
+
+                        fetch('/Order/UpdateStatus', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'RequestVerificationToken': getCsrfToken()
+                            },
+                            body: JSON.stringify({ id: b.id, status: 'Completed' })
+                        })
+                        .then(response => {
+                            if (response.ok) {
+                                item.classList.remove('cancelled');
+                                item.classList.add('completed');
+                                item.querySelector('.booking-actions').innerHTML = '<span style="color:#28a745;">Completed</span>';
+                            } else {
+                                alert('Failed to update status.');
+                            }
+                        });
+                    });
+                }
+            });
+        }
+
+        function getCsrfToken() {
+            const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value
+                || document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+            return token || '';
+        }
+    </script>
+
+    <style>
+        button[disabled] {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+    </style>
+
+
+}

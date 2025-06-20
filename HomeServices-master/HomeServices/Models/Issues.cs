@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 using HomeServices.Enums;
 
 namespace HomeServices.Models
@@ -15,9 +16,9 @@ namespace HomeServices.Models
         public Users User{ get; set; }
         public ReportStatus Status { get; set; }
 
-        
 
-        public string AdminNotes { get; set; }
+        [AllowNull]
+        public string? AdminNotes { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;

@@ -7,7 +7,7 @@
 <h2>مرحبًا، @Model.PersonInfo.User.FirstName @Model.PersonInfo.User.LastName</h2>
 <h3 class="my-3">Nearest Technicians</h3>
 <ul class="list-group mb-4">
-    @foreach (var tech in Model.NearestProviders)
+    @foreach (var tech in Model.NearbyProviders)
     {
         <li class="list-group-item">@tech.User.FirstName @tech.User.LastName</li>
     }

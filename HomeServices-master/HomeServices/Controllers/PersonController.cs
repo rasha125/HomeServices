@@ -148,9 +148,15 @@ namespace HomeServices.Controllers
         {
             var userName = _httpContextAccessor.HttpContext.User.Identity.Name;
 
-            var orders = _orderRep.View()
-                .Where(o => o.Persons.User.UserName == userName)
+            var orders = _context.Orders
+                .Include(o => o.Persons)
+                    .ThenInclude(p => p.User)
+                .Include(o => o.Providers)
+                    .ThenInclude(p => p.User)
+                .Include(o => o.Providers.Services)
+                .Where(o => o.Persons != null && o.Persons.User != null && o.Persons.User.UserName == userName)
                 .ToList();
+
 
 
             var model = new VMPersonIndex

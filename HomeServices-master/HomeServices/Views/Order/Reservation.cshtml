@@ -1,0 +1,59 @@
+﻿@model List<HomeServices.Models.Orders>
+
+
+@{
+    ViewData["Title"] = "Reservation";
+    Layout = "~/Views/_Layout.cshtml";
+
+    var initialDate = Model.Any()
+        ? Model.First().OrdersDate.ToString("yyyy-MM-dd")
+        : DateTime.Today.ToString("yyyy-MM-dd");
+}
+
+
+<div id="calendar"></div>
+
+@section Scripts {
+    <script>
+        const bookings = {};
+
+        @foreach (var order in Model)
+        {
+            var dateStr = order.OrdersDate.ToString("yyyy-MM-dd");
+
+            <text>
+                    if (!bookings["@dateStr"]) {
+                        bookings["@dateStr"] = [];
+                    }
+                    bookings["@dateStr"].push(true); // لا نحتاج التفاصيل فقط نحدد أن هناك حجز
+            </text>
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const calendarEl = document.getElementById('calendar');
+            const calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                initialDate: "@(Model.FirstOrDefault()?.OrdersDate.ToString("yyyy-MM-dd") ?? DateTime.Now.ToString("yyyy-MM-dd"))",
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: ''
+                },
+                events: Object.keys(bookings).map(date => ({
+                    title: `📌 Booking`,
+                    start: date,
+                    allDay: true
+                })),
+                dateClick: function (info) {
+                    const date = info.dateStr;
+                    if (bookings[date]) {
+                        window.location.href = `/Order/BookingByDate?date=${date}`;
+                       }
+                }
+            });
+
+            calendar.render();
+        });
+    </script>
+
+}

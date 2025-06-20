@@ -1,73 +1,165 @@
 ﻿<!DOCTYPE html>
-
-<html>
+<html lang="en">
 <head>
     <meta charset="utf-8" />
-    <title>@ViewBag.Title</title>
+    <title>@ViewBag.Title - Home Services</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/profile.css" />
 
+    <!-- CSS Links -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet" />
+    <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/2.1.0/uicons-regular-rounded/css/uicons-regular-rounded.css'>
+    <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/2.1.0/uicons-regular-solid/css/uicons-regular-solid.css'>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <link rel="stylesheet" href="~/css/profile.css" />
+    <link rel="stylesheet" href="~/css/reservation.css" />
+    <link rel="stylesheet" href="~/css/style.css" />
+    <link rel="stylesheet" href="~/css/Rate.css" />
+    @inject Microsoft.AspNetCore.Antiforgery.IAntiforgery antiforgery
+    @{
+        var tokens = antiforgery.GetAndStoreTokens(Context);
+    }
+    <meta name="csrf-token" content="@tokens.RequestToken" />
+
+
+    <style>
+        .page-wrapper {
+            display: flex;
+            height: 100vh;
+        }
+
+        .sidebar {
+            width: 250px; /* عرض ثابت للشريط الجانبي */
+            background-color: #f8f9fa;
+            border-right: 1px solid #dee2e6;
+            padding: 1rem;
+            flex-shrink: 0; /* يمنع الشريط من الانكماش */
+        }
+
+        .main-section {
+            flex-grow: 1; /* يأخذ باقي المساحة المتاحة */
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto /* يسمح بالتمرير داخل هذا القسم فقط */
+        }
+
+        .top-navbar {
+            background-color: #ffffff;
+            border-bottom: 1px solid #dee2e6;
+            padding: 0.75rem 1.5rem;
+            flex-shrink: 0; /* يمنع الشريط من الانكماش */
+        }
+
+        .main-content {
+            padding: 1.5rem;
+            flex-grow: 1;
+        }
+
+        .profile-pic {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .profile-initials {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background-color: #0d6efd;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1rem;
+        }
+    </style>
 </head>
 <body>
 
-    <div class="container-fluid">
-        <div class="row">
-            <!-- Sidebar -->
-            <div class="col-2 bg-light">
-                <h5 class="text-center mt-3">My Website</h5>
-                <ul class="nav flex-column">
+    <div class="page-wrapper">
+        <!-- 1. الشريط الجانبي (Sidebar) -->
+        <aside class="sidebar">
+            <h5 class="text-center my-3">My Website</h5>
+            <ul class="nav flex-column">
+                @if (User.IsInRole("Admin"))
+                {
+                    <li class="nav-item"><a class="nav-link" href="/Admin/Index"><i class="bi bi-speedometer2 me-2"></i> Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/Person/Index"><i class="bi bi-people me-2"></i> Clients</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/Provider/Index"><i class="bi bi-person-badge me-2"></i> Providers</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/Order/Index"><i class="bi bi-card-list me-2"></i> Services Request</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/Service/Index"><i class="bi bi-tools me-2"></i> Services</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/Issue/Index"><i class="bi bi-flag me-2"></i> Report Issue</a></li>
+                }
+                else if (User.IsInRole("Client"))
+                {
+                    <li class="nav-item"><a class="nav-link" href="/Provider/Services"><i class="bi bi-tools me-2"></i> My Services</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/Provider/Orders"><i class="bi bi-card-list me-2"></i> Orders</a></li>
+                }
+                else if (User.IsInRole("Provider"))
+                {
+                    <li class="nav-item"><a class="nav-link" href="/Provider/dashboard"><i class="bi bi-speedometer2 me-2"></i> Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/Provider/Profile"><i class="bi bi-person-circle me-2"></i> Profile</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/Order/Reservation"><i class="bi bi-calendar-check me-2"></i> Reservation</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/Order/CompletedOrders"><i class="bi bi-check2-circle me-2"></i> Completed Orders</a></li>
+                }
+            </ul>
+        </aside>
 
-                    @if (User.IsInRole("Admin"))
-                    {
-                        <li class="nav-item"><a class="nav-link" href="/Admin/Index">Dashboard</a></li>
-                        <li class="nav-item"><a class="nav-link" href="/Person/Index">Clients</a></li>
-                        <li class="nav-item"><a class="nav-link" href="/Provider/Index">Providers</a></li>
-                        <li class="nav-item"><a class="nav-link" href="/Order/Index">Services Request</a></li>
-                        <li class="nav-item"><a class="nav-link" href="/Service/Index">Services</a></li>
-                        <li class="nav-item"><a class="nav-link" href="/Issue/Index">Report Issue</a></li>
-                    }
-                    else if (User.IsInRole("Client"))
-                    {
-                        <li class="nav-item"><a class="nav-link" href="/Provider/Services">My Services</a></li>
-                        <li class="nav-item"><a class="nav-link" href="/Provider/Orders">Orders</a></li>
-                    }
-                    else if (User.IsInRole("Provider"))
-                    {
-                        <li class="nav-item"><a class="nav-link" href="/Provider/dashboard">Dashboard</a></li>
-                        <li class="nav-item"><a class="nav-link" href="/Provider/Profile">Profile</a></li>
-                    }
-                    else
-                    {
-                        <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
-                    }
+        <div class="main-section">
 
-                    <li class="nav-item mt-3">
-                        @if (User.Identity.IsAuthenticated)
-                        {
-                            <form asp-controller="Users" asp-action="Logout" method="post" style="display:inline">
-                                <button type="submit" class="btn btn-danger w-100">Logout</button>
-                            </form>
+            <nav class="top-navbar d-flex justify-content-between align-items-center">
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <div class="d-flex align-items-center">
+                        @await Html.PartialAsync("_NavbarUserInfo")
+                    </div>
+
+                    <div class="d-flex align-items-center">
+                        @{
+                            string issueLink = null;
+                            if (User.IsInRole("Client"))
+                            {
+                                issueLink = "/Issue/ClientIssue";  // تأكد أن هذا المسار صحيح
+                            }
+                            else if (User.IsInRole("Provider"))
+                            {
+                                issueLink = "/Issue/ProviderIssue";  // تأكد أن هذا المسار صحيح
+                            }
                         }
-                        else
+
+                        @if (!string.IsNullOrEmpty(issueLink))
                         {
-                            <br />
-                            <br />
-                            <a class="nav-link" href="/Account/Login">Login</a>
+                            <a class="nav-link text-secondary mx-2" href="@issueLink" title="Report an Issue">
+                                <i class="bi bi-flag-fill fs-5"></i>
+                            </a>
                         }
-                    </li>
 
-                </ul>
-            </div>
+                        <form asp-controller="Users" asp-action="Logout" method="post" class="d-inline">
+                            <button type="submit" class="btn btn-link text-dark p-0">
+                                <i class="bi bi-box-arrow-right fs-5"></i>
+                            </button>
+                        </form>
+                    </div>
+                }
+                else
+                {
+                    <a class="btn btn-primary" href="/Users/Login">Login</a>
+                }
+            </nav>
 
-            <!-- Main content -->
-            <div class="col-10 mt-3">
+            <main class="main-content">
                 @RenderBody()
-            </div>
+            </main>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     @RenderSection("Scripts", required: false)
 
 </body>

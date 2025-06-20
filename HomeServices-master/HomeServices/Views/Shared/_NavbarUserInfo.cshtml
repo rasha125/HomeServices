@@ -1,0 +1,20 @@
+﻿@inject HomeServices.Models.AppDBContext _context
+@{
+    var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+    var user = _context.Users.FirstOrDefault(u => u.Id == userId);
+}
+
+@if (user != null)
+{
+    <div class="d-flex align-items-center ms-auto">
+        @if (!string.IsNullOrEmpty(user.ImagePath))
+        {
+            <img src="~/uploads/@user.ImagePath" alt="Profile" class="profile-pic" />
+        }
+        else
+        {
+            <div class="profile-initials">@user.FirstName.ToUpper().FirstOrDefault()</div>
+        }
+        <span class="ms-2">@user.FirstName @user.LastName</span>
+    </div>
+}

@@ -8,5 +8,8 @@ namespace HomeServices.ViewModels
         public List<Providers> NearbyProviders { get; set; }
 
         public List<Orders> MyOrders { get; set; }
+        public string FirstName { get; set; }
+
+        public string LastName { get; set; }
     }
 }

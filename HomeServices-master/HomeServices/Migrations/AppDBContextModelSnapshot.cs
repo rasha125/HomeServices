@@ -220,6 +220,8 @@ namespace HomeServices.Migrations
 
                     b.HasKey("RatingsId");
 
+                    b.HasIndex("OrdersId");
+
                     b.ToTable("Ratings");
                 });
 
@@ -540,6 +542,17 @@ namespace HomeServices.Migrations
                     b.Navigation("Services");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("HomeServices.Models.Ratings", b =>
+                {
+                    b.HasOne("HomeServices.Models.Orders", "Orders")
+                        .WithMany()
+                        .HasForeignKey("OrdersId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Orders");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

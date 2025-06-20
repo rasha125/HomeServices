@@ -61,25 +61,6 @@ namespace HomeServices.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Ratings",
-                columns: table => new
-                {
-                    RatingsId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Comment = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    RatingValue = table.Column<int>(type: "int", nullable: false),
-                    OrdersId = table.Column<int>(type: "int", nullable: false),
-                    PersonsId = table.Column<int>(type: "int", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Ratings", x => x.RatingsId);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Services",
                 columns: table => new
                 {
@@ -317,6 +298,31 @@ namespace HomeServices.Migrations
                         onDelete: ReferentialAction.Restrict);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Ratings",
+                columns: table => new
+                {
+                    RatingsId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Comment = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    RatingValue = table.Column<int>(type: "int", nullable: false),
+                    OrdersId = table.Column<int>(type: "int", nullable: false),
+                    PersonsId = table.Column<int>(type: "int", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Ratings", x => x.RatingsId);
+                    table.ForeignKey(
+                        name: "FK_Ratings_Orders_OrdersId",
+                        column: x => x.OrdersId,
+                        principalTable: "Orders",
+                        principalColumn: "OrdersId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
@@ -385,6 +391,11 @@ namespace HomeServices.Migrations
                 name: "IX_Providers_UserId",
                 table: "Providers",
                 column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Ratings_OrdersId",
+                table: "Ratings",
+                column: "OrdersId");
         }
 
         /// <inheritdoc />
@@ -409,13 +420,13 @@ namespace HomeServices.Migrations
                 name: "Issues");
 
             migrationBuilder.DropTable(
-                name: "Orders");
-
-            migrationBuilder.DropTable(
                 name: "Ratings");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
+
+            migrationBuilder.DropTable(
+                name: "Orders");
 
             migrationBuilder.DropTable(
                 name: "Persons");

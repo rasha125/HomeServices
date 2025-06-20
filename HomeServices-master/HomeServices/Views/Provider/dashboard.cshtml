@@ -1,8 +1,77 @@
-﻿@model HomeServices.ViewModels.VMProviderProfile
+﻿@model HomeServices.ViewModels.VMProviderDashboard
 
 @{
     ViewData["Title"] = "Home";
     Layout = "~/Views/_Layout.cshtml";
 }
 
-<h2>مرحبًا، @Model.FirstName @Model.LastName</h2>
+
+<div class="container mt-4">
+    <h3><i class="fi fi-rr-chart-histogram"></i> Orders Summary</h3>
+    <div class="d-flex gap-4 mt-3">
+        <div class="p-3 border rounded text-center" style="flex: 1;">
+            <h5><i class="fi fi-rr-list-check"></i> Total Orders</h5>
+            <p style="font-size: 2rem; font-weight: bold;">@Model.TotalCount</p>
+        </div>
+        <div class="p-3 border rounded text-center" style="flex: 1;">
+            <h5><i class="fi fi-rr-hourglass-start"></i> Pending </h5>
+            <p style="font-size: 2rem; font-weight: bold;">@Model.PendingCount</p>
+        </div>
+        <div class="p-3 border rounded text-center" style="flex: 1;">
+            <h5><i class="fi fi-rr-clipboard-check"></i> Completed </h5>
+            <p style="font-size: 2rem; font-weight: bold;">@Model.CompletedCount</p>
+        </div>
+    </div>
+</div>
+
+<h3 class="mt-5"><i class="fi fi-rr-clock-three"></i> Monthly Orders</h3>
+
+@if (ViewBag.RecentOrders is List<HomeServices.Models.Orders> recent && recent.Count > 0)
+{
+    <div class="row row-cols-1 row-cols-md-3 g-3 justify-content-center">
+        @foreach (var order in ViewBag.RecentOrders as List<HomeServices.Models.Orders>)
+        {
+            <div class="col">
+                <div class="card @(order.Status == "Cancelled" ? "border-danger" : "")" style="width: 18rem;">
+                    <div class="card-details">
+                        <p class="text-title">
+                            @(order.Persons?.User != null
+                                ? order.Persons.User.FirstName + " " + order.Persons.User.LastName
+                                : "Unknown Client")
+                        </p>
+                        <p class="text-body">
+                            <strong><i class="fi fi-rr-marker"></i> Location:</strong> @order.Address <br />
+                            <strong><i class="fi fi-rr-calendar"></i> Date:</strong> @order.OrdersDate.ToString("yyyy-MM-dd") <br />
+                            <strong><i class="fi fi-rr-info"></i> Status:</strong>
+                            @(string.IsNullOrEmpty(order.Status) ? "Pending" : order.Status)
+                        </p>
+                    </div>
+
+                    @if (order.Status == "Cancelled")
+                    {
+                        <button class="card-button cancelled-button" disabled>Cancelled</button>
+                    }
+                    else
+                    {
+                        <button onclick="window.location.href='@Url.Action("BookingDetails", "Order", new { id = order.OrdersId })'" class="card-button">
+                            More Info
+                        </button>
+                    }
+
+
+                </div>
+            </div>
+
+
+        }
+    </div>
+
+
+
+
+}
+else
+{
+    <p>No recent orders available.</p>
+}
+

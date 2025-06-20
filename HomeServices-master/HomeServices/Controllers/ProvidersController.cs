@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using HomeServices.ViewModels;
+using HomeServices.Enums;
 
 namespace HomeServices.Controllers
 {
@@ -53,25 +54,51 @@ namespace HomeServices.Controllers
             return View(data);
         }
 
-        public IActionResult dashboard()
+        [Authorize(Roles = "Provider")]
+        public IActionResult Dashboard()
         {
-            var userName = _httpContextAccessor.HttpContext.User.Identity.Name;
+            var userId = _userManager.GetUserId(User);
 
-            var currentProvider = _rep.View()
-                .FirstOrDefault(p => p.User.UserName == userName);
+            var provider = _context.Providers
+                .FirstOrDefault(p => p.UserId == userId);
 
-            if (currentProvider == null)
+            if (provider == null)
                 return Unauthorized();
 
-            var viewModel = new VMProviderProfile
-            {
-                FirstName = currentProvider.User.FirstName,
-                LastName = currentProvider.User.LastName,
-            };
+            // جلب كل الطلبات الخاصة بالموفر (بما فيهم جميع الحالات)
+            var orders = _context.Orders
+                .Where(o => o.ProviderId == provider.ProvidersId)
+                .ToList();
 
+
+            var totalCount = orders.Count();
+            var completedCount = orders.Count(o => o.Status == OrderStatus.Completed.ToString());
+            var cancelledCount = orders.Count(o => o.Status == OrderStatus.Cancelled.ToString());
+            var pendingCount = totalCount - completedCount - cancelledCount;
+
+
+            var currentDate = DateTime.Now;
+            var recentOrders = _context.Orders
+                .Include(o => o.Persons).ThenInclude(p => p.User)
+                .Include(o => o.Providers).ThenInclude(p => p.Services)
+                .Where(o => o.ProviderId == provider.ProvidersId &&
+                            o.OrdersDate.Month == currentDate.Month &&
+                            o.OrdersDate.Year == currentDate.Year)
+                .OrderByDescending(o => o.OrdersDate)
+                .ToList();
+
+
+            var viewModel = new VMProviderDashboard
+            {
+                PendingCount = pendingCount,
+                CompletedCount = completedCount,
+                TotalCount = totalCount,
+            };
+            ViewBag.RecentOrders = recentOrders;
             return View(viewModel);
         }
 
+        [Authorize(Roles = "Provider")]
         public async Task<IActionResult> Profile()
         {
             var user = await _userManager.GetUserAsync(User);
@@ -100,6 +127,7 @@ namespace HomeServices.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Provider")]
         public async Task<IActionResult> UploadProfileImage(IFormFile ProfileImage)
         {
             // التأكد من المستخدم
@@ -143,6 +171,7 @@ namespace HomeServices.Controllers
             return RedirectToAction("Profile");
         }
 
+        [Authorize(Roles = "Provider")]
         public async Task<IActionResult> EditProfile()
         {
             var user = await _userManager.GetUserAsync(User);
@@ -159,6 +188,7 @@ namespace HomeServices.Controllers
                 Country = user.Country,
                 PhoneNumber = user.PhoneNumber,
                 Description = provider.Description,
+                ProviderStatus = provider.ProviderStatus,
                 ImagePath = user.ImagePath
             };
 
@@ -166,6 +196,7 @@ namespace HomeServices.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Provider")]
         public async Task<IActionResult> EditProfile(VMProviderProfile model, IFormFile? ProfileImage, string? actionType)
         {
             var user = await _userManager.GetUserAsync(User);
@@ -174,9 +205,9 @@ namespace HomeServices.Controllers
             var provider = _context.Providers.FirstOrDefault(p => p.UserId == user.Id);
             if (provider == null) return NotFound();
 
+            // 🔄 حذف الصورة
             if (actionType == "delete")
             {
-                // حذف الصورة القديمة من السيرفر لو موجودة
                 if (!string.IsNullOrEmpty(user.ImagePath))
                 {
                     var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", user.ImagePath);
@@ -186,17 +217,15 @@ namespace HomeServices.Controllers
                     }
                     user.ImagePath = null;
                 }
-                // لا ترجع هنا، استمر بتحديث باقي البيانات
             }
 
-            // لو جرب يرفع صورة جديدة (حتى لو كانت delete، يتجاهل لأنها لن تكون null إذا رفع)
-            if (ProfileImage != null && ProfileImage.Length > 0)
+            // 🔄 تغيير الصورة أو رفع جديدة (حتى لو actionType مش محدد)
+            if ((actionType == "change" || string.IsNullOrEmpty(actionType)) && ProfileImage != null && ProfileImage.Length > 0)
             {
                 var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
                 if (!Directory.Exists(uploadsFolder))
                     Directory.CreateDirectory(uploadsFolder);
 
-                // حذف الصورة القديمة لو موجودة
                 if (!string.IsNullOrEmpty(user.ImagePath))
                 {
                     var oldFile = Path.Combine(uploadsFolder, user.ImagePath);
@@ -210,32 +239,41 @@ namespace HomeServices.Controllers
                 {
                     await ProfileImage.CopyToAsync(stream);
                 }
+
                 user.ImagePath = uniqueFileName;
             }
 
-            // تحديث بيانات المستخدم من النموذج
+
+
             user.FirstName = model.FirstName;
             user.LastName = model.LastName;
             user.City = model.City;
             user.Country = model.Country;
             user.PhoneNumber = model.PhoneNumber;
 
-            var result = await _userManager.UpdateAsync(user);
-            if (!result.Succeeded)
+            var userResult = await _userManager.UpdateAsync(user);
+            if (!userResult.Succeeded)
             {
                 ModelState.AddModelError("", "User data update failed.");
                 return View(model);
             }
 
-            // تحديث بيانات الموفر
-            provider.Description = model.Description;
-            provider.UpdatedAt = DateTime.UtcNow;
+          
+            if (!string.IsNullOrEmpty(model.Description))
+                provider.Description = model.Description;
+
+
+            if (!string.IsNullOrEmpty(model.ProviderStatus))
+                provider.ProviderStatus = model.ProviderStatus;
 
             _context.Providers.Update(provider);
             await _context.SaveChangesAsync();
 
+            TempData["Message"] = "Profile updated successfully.";
             return RedirectToAction("Profile");
         }
+
+
 
 
 

@@ -4,11 +4,9 @@
     ViewData["Title"] = "Profile";
     Layout = "~/Views/_Layout.cshtml";
 }
-
 <div class="container d-flex flex-column justify-content-center align-items-center" style="min-height: 80vh; max-width: 600px;">
     <form asp-action="EditProfile" method="post" enctype="multipart/form-data" id="profileForm" class="profile-form">
 
-        <!-- hidden input لتحديد نوع الإجراء (حذف/تغيير صورة) -->
         <input type="hidden" id="ActionType" name="actionType" value="" />
 
         <div class="mb-3 d-flex justify-content-center">
@@ -70,6 +68,16 @@
             <input type="text" value="@Model.ServiceName" readonly class="form-control" />
         </div>
 
+        <!-- إضافة اختيار الحالة هنا -->
+        <div class="mb-3">
+            <label class="form-label">Availability Status</label>
+            <select name="ProviderStatus" class="form-control" disabled>
+                <option value="Available" selected="@(Model.ProviderStatus == "Available")">Available</option>
+                <option value="Inactive" selected="@(Model.ProviderStatus == "Inactive")">Unavailable</option>
+                <option value="OnVacation" selected="@(Model.ProviderStatus == "OnVacation")">On Vacation</option>
+            </select>
+        </div>
+
         <div class="d-flex justify-content-between">
             <button type="button" id="editBtn" class="btn btn-outline-primary">Edit</button>
             <button type="submit" id="saveBtn" class="btn btn-success d-none">Save</button>
@@ -97,6 +105,12 @@
                 if (input !== firstNameInput && input !== lastNameInput && input.name !== '' && input.type !== 'hidden') {
                     input.removeAttribute('readonly');
                 }
+            });
+
+            // تفعيل الـ select عند الضغط على Edit
+            const selects = form.querySelectorAll('select');
+            selects.forEach(function (select) {
+                select.removeAttribute('disabled');
             });
 
             if (imageButtons) {

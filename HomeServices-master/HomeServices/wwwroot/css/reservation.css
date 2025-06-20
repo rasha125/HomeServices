@@ -1,0 +1,101 @@
+﻿body {
+    font-family: Arial, sans-serif;
+    background: #f5f5f5;
+    margin: 0;
+    padding: 1rem;
+}
+
+.title {
+    text-align: center;
+}
+
+#calendar {
+    max-width: 900px;
+    margin: 2rem auto;
+    background: white;
+    padding: 1rem;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+.timeline-container {
+    max-width: 600px;
+    margin: 2rem auto;
+    border-left: 3px solid #ccc;
+    position: relative;
+    background-color: white;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+.timeline-item {
+    position: relative;
+    margin: 2rem 0;
+    padding-left: 2rem;
+}
+
+    .timeline-item::before {
+        content: "";
+        position: absolute;
+        left: -11px;
+        top: 5px;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background-color: #007bff;
+        border: 3px solid #fff;
+        box-shadow: 0 0 0 2px #007bff;
+    }
+
+.completed::before {
+    background-color: #28a745;
+    box-shadow: 0 0 0 2px #28a745;
+}
+
+.canceled::before {
+    background-color: #dc3545;
+    box-shadow: 0 0 0 2px #dc3545;
+}
+
+.booking-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+button.small-btn {
+    font-size: 0.75rem;
+    padding: 4px 8px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+}
+
+    button.small-btn.cancel {
+        background-color: #dc3545;
+        color: white;
+    }
+
+    button.small-btn.complete {
+        background-color: #28a745;
+        color: white;
+    }
+
+.confirm-frame {
+    margin-top: 0.5rem;
+    background: #f9f9f9;
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    display: none;
+}
+
+.table-hover tbody tr:hover {
+    background-color: #f5f5f5;
+}
+
+.thead-dark th {
+    color: #fff;
+    background-color: #343a40;
+    border-color: #454d55;
+}
