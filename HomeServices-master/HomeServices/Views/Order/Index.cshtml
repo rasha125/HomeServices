@@ -1,95 +1,118 @@
 ﻿@model IEnumerable<HomeServices.Models.Orders>
 
 @{
-    ViewData["Title"] = "Index";
-    Layout = "~/Views/_Layout.cshtml";
+    ViewData["Title"] = "Orders";
+    Layout = "~/Views/_Layout.cshtml"; 
 }
+<div class="container-fluid mt-4">
 
-<h1>Index</h1>
-@if (!User.IsInRole("Admin"))
-{
-    <p>
-        <a asp-action="Create">Create New</a>
-    </p>
-}
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.OrdersId)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Address)
-            </th>
-          
-            <th>
-                @Html.DisplayNameFor(model => model.OrdersDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.OrdersTime)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Status)
-            </th>
+    <!-- Header and Create Button -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-0">@ViewData["Title"]</h1>
            
-            <th>
-                @Html.DisplayNameFor(model => model.Providers)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Persons)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.CreatedAt)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.UpdatedAt)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DeletedAt)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.OrdersId)
-                </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Address)
-            </td>
-            
-            <td>
-                @Html.DisplayFor(modelItem => item.OrdersDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.OrdersTime)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Status)
-            </td>
-           
-                <td>
-                    @item.Providers.User.FirstName @item.Providers.User.LastName
-                </td>
-                <td>
-                    @item.Persons.User.FirstName @item.Persons.User.LastName
-                </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CreatedAt)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.UpdatedAt)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DeletedAt)
-            </td>
-            <td>
-                <a asp-action="Details" asp-route-id="@item.OrdersId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.OrdersId">Delete</a>
-            </td>
-        </tr>
+        </div>
+       
+    </div>
+
+    <!-- Card container for the table -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-light d-flex justify-content-between align-items-center">
+            <!-- Search Bar -->
+            <div class="w-50">
+                <div class="input-group">
+                    <span class="input-group-text bg-white"><i class="fas fa-search"></i></span>
+                    <input type="text" id="searchInput" class="form-control" placeholder="Search.." />
+                </div>
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover table-striped mb-0" id="ordersTable">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="ps-3">Client</th>
+                            <th>Provider</th>
+                            <th>Order Dte</th>
+                            <th>Order </th>
+                            <th class="text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Any())
+                        {
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td class="ps-3 align-middle">
+                                        @Html.DisplayFor(modelItem => item.Persons.User.FirstName)
+                                        @Html.DisplayFor(modelItem => item.Persons.User.LastName)
+
+
+                                    </td>
+                                    <td class="align-middle">
+                                        @* نفترض أن لديك علاقة واسم في موديل Providers *@
+                                        @Html.DisplayFor(modelItem => item.Providers.User.FirstName)
+                                        @Html.DisplayFor(modelItem => item.Providers.User.LastName)
+
+                                    </td>
+                                    <td class="align-middle">
+                                        @item.OrdersDate.ToString("dd MMM, yyyy")
+                                    </td>
+                                    <td class="align-middle">
+                                        @{
+                                            var status = item.Status ?? "";
+                                            var badgeClass = "bg-secondary"; // Default
+                                            if (status.Equals("Completed", StringComparison.OrdinalIgnoreCase)) { badgeClass = "bg-success"; }
+                                            else if (status.Equals("Pending", StringComparison.OrdinalIgnoreCase)) { badgeClass = "bg-warning text-dark"; }
+                                            else if (status.Equals("Cancelled", StringComparison.OrdinalIgnoreCase)) { badgeClass = "bg-danger"; }
+                                            else if (status.Equals("In Progress", StringComparison.OrdinalIgnoreCase)) { badgeClass = "bg-info"; }
+                                        }
+                                        <span class="badge @badgeClass">@status</span>
+                                    </td>
+                                    <td class="text-center align-middle">
+                                        <a asp-action="Details" asp-route-id="@item.OrdersId" class="btn btn-sm btn-outline-info" data-bs-toggle="tooltip" title="Details">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                       
+                                        
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="5" class="text-center text-muted py-5">
+                                    <h4> No Orders</h4>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // 1. Initialize Bootstrap Tooltips
+            // This makes the small text appear when you hover over the icon buttons
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+
+            // 2. Search filter functionality
+            $("#searchInput").on("keyup", function () {
+                var value = $(this).val().toLowerCase();
+                $("#ordersTable tbody tr").filter(function () {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+                });
+            });
+        });
+    </script>
 }
-    </tbody>
-</table>

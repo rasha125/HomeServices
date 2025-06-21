@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "C:\\Users\\ghaid\\source\\repos\\HomeServices\\",
+  "WorkspaceRootPath": "C:\\Users\\Hp\\source\\repos\\HomeServices\\HomeServices\\",
   "Documents": [],
   "DocumentGroupContainers": [
     {
@@ -14,6 +14,10 @@
             {
               "$type": "Bookmark",
               "Name": "ST:0:0:{aa2115a1-9712-457b-9047-dbb71ca2cdd2}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{cce594b6-0c39-4442-ba28-10c64ac7e89f}"
             }
           ]
         }

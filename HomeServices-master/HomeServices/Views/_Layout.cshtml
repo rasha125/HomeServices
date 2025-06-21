@@ -4,15 +4,16 @@
     <meta charset="utf-8" />
     <title>@ViewBag.Title - Home Services</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+   <!--list js-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/list.js/2.3.1/list.min.js"></script>
 
     <!-- CSS Links -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet" />
-    <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/2.1.0/uicons-regular-rounded/css/uicons-regular-rounded.css'>
-    <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/2.1.0/uicons-regular-solid/css/uicons-regular-solid.css'>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
+    <!-- Your Custom CSS Files -->
     <link rel="stylesheet" href="~/css/profile.css" />
     <link rel="stylesheet" href="~/css/reservation.css" />
     <link rel="stylesheet" href="~/css/DashProvider.css" />
@@ -20,6 +21,7 @@
     <link rel="stylesheet" href="~/css/cards.css" />
     <link rel="stylesheet" href="~/css/Chat.css" />
     <link rel="stylesheet" href="~/css/custom.css" />
+    @* Add other CSS files if needed, but the main layout styles are below *@
 
 
     @inject Microsoft.AspNetCore.Antiforgery.IAntiforgery antiforgery
@@ -30,92 +32,155 @@
 
 
     <style>
+        :root {
+            --sidebar-bg: #2c3e50;
+            --sidebar-link-color: #bdc3c7;
+            --sidebar-link-hover: #ffffff;
+            --sidebar-active-bg: #3498db;
+            --top-navbar-bg: #ffffff;
+            --page-bg: #f4f7f6;
+        }
+
+        html, body {
+            height: 100%; /* Ensure the html and body take full height */
+            margin: 0;
+            padding: 0;
+        }
+
         body {
-            overflow-x: hidden; /* يمنع ظهور شريط تمرير أفقي */
+            overflow-x: hidden;
+            background-color: var(--page-bg);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         .page-wrapper {
             display: flex;
-            height: 100vh;
+            /* FIXED: Changed from height to min-height */
+            min-height: 100vh;
         }
 
+        /* --- SIDEBAR STYLES (Unchanged) --- */
         .sidebar {
             width: 250px;
-            background-color: #f8f9fa;
-            border-right: 1px solid #dee2e6;
-            padding: 1rem;
+            background-color: var(--sidebar-bg);
             flex-shrink: 0;
-            transition: transform 0.3s ease-in-out; /* حركة ناعمة */
+            transition: transform 0.3s ease-in-out;
             z-index: 1000;
+            display: flex;
+            flex-direction: column;
         }
 
+        .sidebar-header {
+            padding: 1.5rem 1rem;
+            text-align: center;
+            color: #ecf0f1;
+            font-size: 1.5rem;
+            font-weight: 700;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar .nav-link {
+            color: var(--sidebar-link-color);
+            padding: 0.9rem 1.5rem;
+            display: flex;
+            align-items: center;
+            border-radius: 8px;
+            margin: 0.2rem 0;
+            transition: all 0.3s ease;
+        }
+
+            .sidebar .nav-link i {
+                margin-right: 1rem;
+                font-size: 1.2rem;
+                width: 20px;
+                text-align: center;
+            }
+
+            .sidebar .nav-link:hover {
+                background-color: rgba(255, 255, 255, 0.05);
+                color: var(--sidebar-link-hover);
+                transform: translateX(5px);
+            }
+
+            .sidebar .nav-link.active {
+                background-color: var(--sidebar-active-bg);
+                color: #ffffff;
+                font-weight: 500;
+            }
+
+        /* --- MAIN SECTION & TOP NAVBAR STYLES --- */
         .main-section {
             flex-grow: 1;
             display: flex;
             flex-direction: column;
-            overflow-y: auto
+            /* FIXED: Removed overflow-y: auto from here */
         }
 
         .top-navbar {
-            background-color: #ffffff;
-            border-bottom: 1px solid #dee2e6;
+            background-color: var(--top-navbar-bg);
             padding: 0.75rem 1.5rem;
             flex-shrink: 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            z-index: 500;
+            position: sticky; /* Makes the navbar stick to the top on scroll */
+            top: 0;
         }
 
+        /* FIXED: The main content area now handles scrolling */
         .main-content {
             padding: 1.5rem;
-            flex-grow: 1;
+            flex-grow: 1; /* This makes it take up all available space */
+            overflow-y: auto; /* Allows only this area to scroll */
         }
 
+        /* User info in Navbar (Unchanged) */
         .profile-pic {
-            width: 38px;
-            height: 38px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
             object-fit: cover;
         }
 
         .profile-initials {
-            width: 38px;
-            height: 38px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
-            background-color: #0d6efd;
+            background-color: var(--sidebar-active-bg);
             color: white;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: bold;
-            font-size: 1rem;
         }
 
-        /* NEW: Styles for the overlay */
+        /* Sidebar Overlay for mobile (Unchanged) */
         .sidebar-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            z-index: 999; /* خلف السايدبار */
-            display: none; /* مخفي افتراضياً */
+            background-color: rgba(0,0,0,0.5);
+            z-index: 999;
+            display: none;
         }
 
             .sidebar-overlay.active {
-                display: block; /* يظهر عند الحاجة */
+                display: block;
             }
 
-        /* NEW: Responsive styles for screens smaller than large (tablets and phones) */
+        /* Responsive styles (Unchanged) */
         @@media (max-width: 991.98px) {
             .sidebar {
-                position: fixed; /* يصبح عائمًا فوق المحتوى */
+                position: fixed;
                 top: 0;
                 left: 0;
                 height: 100vh;
-                transform: translateX(-100%); /* إخفاء الشريط إلى اليسار */
+                transform: translateX(-100%);
             }
 
                 .sidebar.show {
-                    transform: translateX(0); /* إظهار الشريط عند إضافة كلاس show */
+                    transform: translateX(0);
                 }
 
             .main-section {
@@ -127,50 +192,51 @@
 <body>
 
     <div class="page-wrapper">
-        <!-- 1. الشريط الجانبي (Sidebar) -->
-        <!-- UPDATED: Added an ID for JavaScript to target -->
+        <!-- Sidebar with new design -->
         <aside class="sidebar" id="sidebar">
-            <h5 class="text-center my-3">My Website</h5>
-            <ul class="nav flex-column">
+            <div class="sidebar-header">
+                Home Services
+            </div>
+
+            <ul class="nav flex-column p-3">
                 @if (User.IsInRole("Admin"))
                 {
-                    <li class="nav-item"><a class="nav-link" href="/Admin/Dashboard"><i class="bi bi-speedometer2 me-2"></i> Dashboard</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/Person/Index"><i class="bi bi-person-lines-fill me-2"></i>Clients</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/Provider/Index"><i class="bi bi-person-lines-fill me-2"></i>Providers</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/Order/Index"><i class="bi bi-card-list me-2"></i>Orders</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/Service/IndexServices"><i class="bi bi-plus-lg me-2"></i>Services</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/Issue/Index"><i class="bi bi-book me-2"></i>Report Issue</a></li>
+                    <li class="nav-item"><a class="nav-link" asp-controller="Admin" asp-action="Dashboard"><i class="bi bi-speedometer2"></i> Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link" asp-controller="Person" asp-action="Index"><i class="bi bi-person-lines-fill"></i> Clients</a></li>
+                    <li class="nav-item"><a class="nav-link" asp-controller="Provider" asp-action="Index"><i class="bi bi-person-badge"></i> Providers</a></li>
+                    <li class="nav-item"><a class="nav-link" asp-controller="Order" asp-action="Index"><i class="bi bi-card-list"></i> Orders</a></li>
+                    <li class="nav-item"><a class="nav-link" asp-controller="Service" asp-action="IndexServices"><i class="bi bi-tools"></i> Services</a></li>
+                    <li class="nav-item"><a class="nav-link" asp-controller="Issue" asp-action="Index"><i class="bi bi-book"></i> Report Issue</a></li>
                 }
                 else if (User.IsInRole("Client"))
                 {
-                    <li class="nav-item"><a class="nav-link" href="/Person/dashboard"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/Person/Profile"><i class="bi bi-person-circle me-2"></i> Profile</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/Service/index"><i class="bi bi-plus-lg me-2"></i> Order Service</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/Person/Orders"><i class="bi bi-card-list me-2"></i> Orders</a></li>
-                    <li class="nav-item"> <a class="nav-link" href="/Person/ListOfProvider"> <i class="bi bi-chat-dots me-2"></i> Messages</a></li>
+                    <li class="nav-item"><a class="nav-link" asp-controller="Person" asp-action="Dashboard"><i class="bi bi-speedometer2"></i> Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link" asp-controller="Person" asp-action="Profile"><i class="bi bi-person-circle"></i> Profile</a></li>
+                    <li class="nav-item"><a class="nav-link" asp-controller="Service" asp-action="Index"><i class="bi bi-grid-1x2-fill"></i> Order Service</a></li>
+                    <li class="nav-item"><a class="nav-link" asp-controller="Person" asp-action="Orders"><i class="bi bi-card-list"></i> Orders</a></li>
+                    <li class="nav-item"><a class="nav-link" asp-controller="Person" asp-action="ListOfProvider"><i class="bi bi-chat-dots"></i> Messages</a></li>
                 }
                 else if (User.IsInRole("Provider"))
                 {
-                    <li class="nav-item"><a class="nav-link" href="/Provider/dashboard"><i class="bi bi-speedometer2 me-2"></i> Dashboard</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/Provider/Profile"><i class="bi bi-person-circle me-2"></i> Profile</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/Order/Reservation"><i class="bi bi-calendar-check me-2"></i> Reservation</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/Order/CompletedOrders"><i class="bi bi-check2-circle me-2"></i> Completed Orders</a></li>
-                    <li class="nav-item"> <a class="nav-link" href="/Provider/ListOfPersons"> <i class="bi bi-chat-dots me-2"></i> Messages</a></li>
+                    <li class="nav-item"><a class="nav-link" asp-controller="Provider" asp-action="Dashboard"><i class="bi bi-speedometer2"></i> Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link" asp-controller="Provider" asp-action="Profile"><i class="bi bi-person-circle"></i> Profile</a></li>
+                    <li class="nav-item"><a class="nav-link" asp-controller="Order" asp-action="Reservation"><i class="bi bi-calendar-check"></i> Reservation</a></li>
+                    <li class="nav-item"><a class="nav-link" asp-controller="Order" asp-action="CompletedOrders"><i class="bi bi-check2-circle"></i> Completed Orders</a></li>
+                    <li class="nav-item"><a class="nav-link" asp-controller="Provider" asp-action="ListOfPersons"><i class="bi bi-chat-dots"></i> Messages</a></li>
                 }
             </ul>
         </aside>
 
-        <!-- NEW: Overlay for when the sidebar is open on mobile -->
         <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
         <!-- Main Section -->
         <div class="main-section">
-            <!-- Top Navbar -->
+            <!-- Top Navbar with new design -->
             <nav class="top-navbar d-flex justify-content-between align-items-center">
                 <div class="d-flex align-items-center">
-                    <!-- NEW: Hamburger menu button, visible only on smaller screens (d-lg-none) -->
-                    <button class="btn d-lg-none me-2" type="button" id="sidebarToggle">
-                        <i class="bi bi-list fs-3"></i>
+                    <!-- Hamburger menu button -->
+                    <button class="btn d-lg-none me-2 p-0 border-0" type="button" id="sidebarToggle">
+                        <i class="bi bi-list fs-2"></i>
                     </button>
 
                     @if (User.Identity.IsAuthenticated)
@@ -181,17 +247,17 @@
 
                 @if (User.Identity.IsAuthenticated)
                 {
-                    <div class="d-flex align-items-center">
+                    <div class="d-flex align-items-center gap-3">
                         @if (!User.IsInRole("Admin"))
                         {
-                            <a class="nav-link text-secondary mx-2" href="#" data-bs-toggle="modal" data-bs-target="#issueModal" title="Report an Issue">
-                                <i class="bi bi-flag-fill fs-5"></i>
+                            <a class="nav-link text-secondary" href="#" data-bs-toggle="modal" data-bs-target="#issueModal" title="Report an Issue">
+                                <i class="bi bi-flag fs-4"></i>
                             </a>
                             @await Html.PartialAsync("_IssueModal", new HomeServices.ViewModels.VMIssue())
                         }
                         <form asp-controller="Users" asp-action="Logout" method="post" class="d-inline">
-                            <button type="submit" class="btn btn-link text-dark p-0 ms-2">
-                                <i class="bi bi-box-arrow-right fs-5"></i>
+                            <button type="submit" class="btn btn-link text-danger p-0" title="Logout">
+                                <i class="bi bi-box-arrow-right fs-4"></i>
                             </button>
                         </form>
                     </div>
@@ -212,43 +278,37 @@
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 
-    <!-- NEW: JavaScript for toggling the sidebar -->
+    <!-- Sidebar toggle script -->
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             const sidebar = document.getElementById('sidebar');
             const sidebarToggle = document.getElementById('sidebarToggle');
             const sidebarOverlay = document.getElementById('sidebarOverlay');
 
-            // Function to open the sidebar
-            function openSidebar() {
-                sidebar.classList.add('show');
-                sidebarOverlay.classList.add('active');
+            function toggleSidebar() {
+                sidebar.classList.toggle('show');
+                sidebarOverlay.classList.toggle('active');
             }
 
-            // Function to close the sidebar
-            function closeSidebar() {
-                sidebar.classList.remove('show');
-                sidebarOverlay.classList.remove('active');
-            }
-
-            // Event listener for the toggle button
             if (sidebarToggle) {
-                sidebarToggle.addEventListener('click', function () {
-                    // If sidebar is already shown, close it. Otherwise, open it.
-                    if (sidebar.classList.contains('show')) {
-                        closeSidebar();
-                    } else {
-                        openSidebar();
-                    }
-                });
+                sidebarToggle.addEventListener('click', toggleSidebar);
+            }
+            if (sidebarOverlay) {
+                sidebarOverlay.addEventListener('click', toggleSidebar);
             }
 
-            // Event listener for the overlay (to close when clicking outside)
-            if (sidebarOverlay) {
-                sidebarOverlay.addEventListener('click', function () {
-                    closeSidebar();
-                });
-            }
+            // --- NEW: Active Link Logic ---
+            const currentPath = window.location.pathname.toLowerCase();
+            const navLinks = document.querySelectorAll('.sidebar .nav-link');
+            navLinks.forEach(link => {
+                const linkPath = new URL(link.href).pathname.toLowerCase();
+                // Special case for dashboard
+                if (currentPath.includes('dashboard') && linkPath.includes('dashboard')) {
+                     link.classList.add('active');
+                } else if (!currentPath.includes('dashboard') && linkPath === currentPath) {
+                    link.classList.add('active');
+                }
+            });
         });
     </script>
 

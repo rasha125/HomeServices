@@ -295,33 +295,39 @@ namespace HomeServices.Controllers
                 return View();
             }
         }
-
-        // GET: ProvidersController/Delete/5
-        public ActionResult Delete(int id)
+        [HttpPost]
+        public IActionResult Delete(int id)
         {
-            var data = _rep.Find(id);
-            return View(data);
+            var provider = _context.Providers.FirstOrDefault(p => p.ProvidersId == id);
+
+            if (provider == null)
+            {
+                return NotFound();
+            }
+
+            provider.DeletedAt = DateTime.Now;
+            _context.SaveChanges();
+
+            return RedirectToAction("Index");
         }
 
-        // POST: ProvidersController/Delete/5
-        public ActionResult Delete(int id, Providers collection)
-        {
-            try
-            {
-                _rep.Delete(id, collection);
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
+        
 
         // GET: ProvidersController/Details/5
         public ActionResult Details(int id)
         {
-            var data = _rep.Find(id);
-            return View(data);
+            var provider = _context.Providers
+      .Include(p => p.User)
+      .Include(p => p.Services)
+      .FirstOrDefault(p => p.ProvidersId == id);
+
+            if (provider == null)
+            {
+                return NotFound();
+            }
+
+            return View(provider);
+         
         }
 
 

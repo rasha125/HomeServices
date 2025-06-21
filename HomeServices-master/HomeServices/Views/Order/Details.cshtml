@@ -2,83 +2,60 @@
 
 @{
     ViewData["Title"] = "Details";
-    Layout = "~/Views/_Layout.cshtml";
 }
 
-<h1>Details</h1>
+<h1 class="mb-4">Order Details</h1>
+
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+        <dl class="row">
+            <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Address)</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.Address)</dd>
+
+            <dt class="col-sm-3">@Html.DisplayNameFor(model => model.MapUrl)</dt>
+            <dd class="col-sm-9">
+                @if (!string.IsNullOrEmpty(Model.MapUrl))
+                {
+                    <a href="@Model.MapUrl" target="_blank">@Model.MapUrl</a>
+                }
+                else
+                {
+                    <span class="text-muted">No URL</span>
+                }
+            </dd>
+
+            <dt class="col-sm-3">@Html.DisplayNameFor(model => model.OrdersDate)</dt>
+            <dd class="col-sm-9">@Model.OrdersDate.ToString("dd MMMM yyyy")</dd>
+
+            <dt class="col-sm-3">@Html.DisplayNameFor(model => model.OrdersTime)</dt>
+            <dd class="col-sm-9">@Model.OrdersTime.ToString(@"hh\:mm")</dd>
+
+            <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Status)</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.Status)</dd>
+
+            <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Description)</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.Description)</dd>
+
+            <dt class="col-sm-3">مزود الخدمة</dt>
+            <dd class="col-sm-9">@Model.Providers?.User?.FirstName @Model.Providers?.User?.LastName</dd>
+
+            <dt class="col-sm-3">Client</dt>
+            <dd class="col-sm-9">@Model.Persons?.User?.FirstName @Model.Persons?.User?.LastName</dd>
+
+            <dt class="col-sm-3">@Html.DisplayNameFor(model => model.CreatedAt)</dt>
+            <dd class="col-sm-9">@Model.CreatedAt</dd>
+
+            <dt class="col-sm-3">@Html.DisplayNameFor(model => model.UpdatedAt)</dt>
+            <dd class="col-sm-9">@Model.UpdatedAt</dd>
+
+            <dt class="col-sm-3">@Html.DisplayNameFor(model => model.DeletedAt)</dt>
+            <dd class="col-sm-9">@Model.DeletedAt</dd>
+        </dl>
+    </div>
+</div>
 
 <div>
-    <h4>Orders</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Address)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Address)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.MapUrl)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.MapUrl)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.OrdersDate)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.OrdersDate)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.OrdersTime)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.OrdersTime)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Status)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Status)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Description)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Description)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Providers)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Providers.ProvidersId)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Persons)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Persons.UserId)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.CreatedAt)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.CreatedAt)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.UpdatedAt)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.UpdatedAt)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.DeletedAt)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.DeletedAt)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index" class="btn btn-secondary">
+        <i class="fas fa-arrow-left me-1"></i> Back To List
+    </a>
 </div>

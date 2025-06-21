@@ -1,10 +1,10 @@
-﻿<style>
-    /* لإعطاء خلفية بسيطة للصفحة */
+﻿
+
+<style>
     body {
         background-color: #f8f9fa;
     }
 
-    /* تصميم البطاقات الرئيسي */
     .card {
         border: none;
         border-radius: 0.75rem;
@@ -35,34 +35,28 @@
             border-bottom: none !important;
         }
 
-    /* تصميم خاص لحالة الطلب */
     .order-status {
         font-weight: bold;
         padding: 0.25rem 0.6rem;
         border-radius: 20px;
         font-size: 0.8rem;
         color: #fff;
-        background-color: #0d6efd; /* لون افتراضي أزرق (In Progress) */
+        background-color: #0d6efd;
     }
 
-        /* يمكنك تخصيص ألوان الحالة إذا أردت */
-        /* ملاحظة: هذا يتطلب تعديل الكود لإضافة كلاس بناءً على الحالة */
         .order-status.completed {
-            background-color: #198754; /* أخضر */
+            background-color: #198754;
         }
 
         .order-status.pending {
-            background-color: #ffc107; /* أصفر */
+            background-color: #ffc107;
             color: #000;
         }
 
         .order-status.cancelled {
-            background-color: #dc3545; /* أحمر */
+            background-color: #dc3545;
         }
 
-
-    /* لإضافة أيقونات (اختياري) */
-    /* تأكد من أنك تستخدم مكتبة مثل Font Awesome */
     .me-2 {
         margin-right: 0.5rem;
     }
@@ -71,30 +65,24 @@
         margin-left: 1rem;
     }
 
-    .fa-users-cog, .fa-clipboard-list, .fa-user, .fa-user-tie, .fa-calendar-alt, .fa-clock {
-        color: #0d6efd;
-    }
-
-    .text-muted .fas {
-        color: #6c757d;
+    .pagination {
+        justify-content: center;
     }
 </style>
 
-@{
-    ViewData["Title"] = "Home";
-    Layout = "~/Views/_Layout.cshtml";
-}
-
 <div class="container mt-4">
 
+    <!-- ترحيب -->
     <div class="card shadow-sm mb-4">
         <div class="card-body text-center p-3">
             <h4 class="card-title mb-1">مرحبًا، @Model.PersonInfo.User.FirstName @Model.PersonInfo.User.LastName</h4>
             <p class="card-text text-muted mb-0">يسعدنا رؤيتك مرة أخرى</p>
         </div>
     </div>
+
     <div class="row">
 
+        <!-- أقرب مزودين -->
         <div class="col-lg-6 mb-4">
             <div class="card h-100 shadow-sm">
                 <div class="card-header">
@@ -103,25 +91,27 @@
                         Nearest Technicians in @Model.PersonInfo.User.City
                     </h3>
                 </div>
-                <div class="card-body">
-                    <ul class="list-group list-group-flush">
+                <div class="card-body" id="providersList">
+                    <ul class="list-group list-group-flush list">
                         @foreach (var tech in Model.NearbyProviders)
                         {
-                            <!-- قمنا بتعديل بسيط على العنصر ليستوعب التصميم الجديد -->
                             <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <div>
-                                    <i class="fas fa-user me-2 text-primary"></i> <!-- أيقونة اختيارية -->
+                                <div class="name">
+                                    <i class="fas fa-user me-2 text-primary"></i>
                                     @tech.User.FirstName @tech.User.LastName
                                 </div>
                                 <span class="badge bg-secondary rounded-pill">@tech.User.City</span>
                             </li>
                         }
                     </ul>
+                    <div class="mt-3">
+                        <ul class="pagination"></ul>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- قسم طلباتي -->
+        <!-- طلباتي -->
         <div class="col-lg-6 mb-4">
             <div class="card h-100 shadow-sm">
                 <div class="card-header">
@@ -130,14 +120,14 @@
                         My Orders
                     </h3>
                 </div>
-                <div class="card-body">
-                    <ul class="list-group list-group-flush">
+                <div class="card-body" id="ordersList">
+                    <ul class="list-group list-group-flush list">
                         @foreach (var order in Model.MyOrders)
                         {
                             <li class="list-group-item">
                                 <div class="d-flex justify-content-between align-items-center mb-2">
-                                    <span class="fw-bold">Order #: @order.OrdersId</span>
-                                    <span class="order-status">@order.Status</span>
+                                    <span class="fw-bold name">Order #: @order.OrdersId</span>
+                                    <span class="order-status @order.Status?.ToLower()">@order.Status</span>
                                 </div>
                                 <div class="text-muted small">
                                     <div>
@@ -154,8 +144,26 @@
                             </li>
                         }
                     </ul>
+                    <div class="mt-3">
+                        <ul class="pagination"></ul>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<!-- تفعيل الـ Pagination -->
+<script>
+    new List('providersList', {
+        valueNames: ['name'],
+        page: 5,
+        pagination: true
+    });
+
+    new List('ordersList', {
+        valueNames: ['name'],
+        page: 5,
+        pagination: true
+    });
+</script>

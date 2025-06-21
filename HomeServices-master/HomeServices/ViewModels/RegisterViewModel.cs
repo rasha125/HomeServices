@@ -45,6 +45,7 @@ namespace HomeServices.ViewModels
 
 
         // خاص بمقدم الخدمة
+        [Range(18, 100, ErrorMessage = "Age must be between 18 and 100.")]
         public int? Age { get; set; }
 
         public int? ServicesId { get; set; }

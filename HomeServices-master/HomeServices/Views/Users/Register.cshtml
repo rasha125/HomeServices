@@ -183,7 +183,7 @@
                             <div class="col-md-6 ">
 
                                 <label asp-for="Age" class="form-label text-dark fw-semibold" min="18" max="80"></label>
-                                <input asp-for="Age" class="form-control form-control-lg border-0 bg-light" />
+                                <input asp-for="Age" type="number" min="18" max="100" class="form-control form-control-lg border-0 bg-light" />
                                 <span asp-validation-for="Age" class="text-danger small"></span>
 
 

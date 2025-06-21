@@ -108,25 +108,22 @@ namespace HomeServices.Controllers
             }
         }
 
-        public ActionResult Delete(int id)
+        [HttpPost]
+        public IActionResult Delete(int id)
         {
-            var data = _rep.Find(id);
-            return View(data);
+            var provider = _context.Persons.FirstOrDefault(p => p.PersonsId == id);
+
+            if (provider == null)
+            {
+                return NotFound();
+            }
+
+            provider.DeletedAt = DateTime.Now;
+            _context.SaveChanges();
+
+            return RedirectToAction("Index");
         }
 
-        [HttpPost]
-        public ActionResult Delete(int id, Persons collection)
-        {
-            try
-            {
-                _rep.Delete(id, collection);
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
 
         public ActionResult Details(int id)
         {

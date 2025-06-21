@@ -102,8 +102,14 @@ namespace HomeServices.Controllers
 
         public IActionResult Index()
         {
-            var data = _rep.View().ToList();
-            return View(data);
+            var orders = _context.Orders
+    .Include(o => o.Persons)    // جلب بيانات العميل
+        .ThenInclude(p => p.User)  // جلب بيانات المستخدم المرتبط بالعميل
+    .Include(o => o.Providers)  // جلب بيانات المزود
+        .ThenInclude(pr => pr.User) // جلب بيانات المستخدم المرتبط بالمزود
+    .ToList();
+
+            return View(orders);
         }
         [HttpGet]
         [Authorize(Roles = "Provider")]
@@ -336,7 +342,18 @@ namespace HomeServices.Controllers
         // GET: OrdersController/Details/5
         public ActionResult Details(int id)
         {
-            var data = _rep.Find(id);
+            var data = _context.Orders
+        .Include(o => o.Persons)
+            .ThenInclude(p => p.User)
+        .Include(o => o.Providers)
+            .ThenInclude(pr => pr.User)
+        .FirstOrDefault(o => o.OrdersId == id);
+
+            if (data == null)
+            {
+                return NotFound();
+            }
+
             return View(data);
         }
     }
