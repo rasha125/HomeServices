@@ -4,91 +4,112 @@
     ViewData["Title"] = "Profile";
     Layout = "~/Views/_Layout.cshtml";
 }
-<div class="container d-flex flex-column justify-content-center align-items-center" style="min-height: 80vh; max-width: 600px;">
-    <form asp-action="EditProfile" method="post" enctype="multipart/form-data" id="profileForm" class="profile-form">
 
-        <input type="hidden" id="ActionType" name="actionType" value="" />
+<div class="profile-container">
+    <div class="profile-card" id="profileCard">
 
-        <div class="mb-3 d-flex justify-content-center">
-            @if (!string.IsNullOrEmpty(Model.ImagePath))
-            {
-                <div class="profile-photo mb-2">
-                    <img src="~/uploads/@Model.ImagePath" alt="Profile Image" class="profile-img rounded-circle" style="max-width:150px; max-height:150px; object-fit:cover;" />
-                </div>
+        <form asp-action="EditProfile" method="post" enctype="multipart/form-data" id="profileForm">
 
-                <div id="imageButtons" class="d-none justify-content-center gap-1">
-                    <button type="button" onclick="markDeletePhoto()" class="btn btn-danger btn-sm">Delete Photo</button>
+            <input type="hidden" id="ActionType" name="actionType" value="" />
 
-                    <label class="btn btn-primary btn-sm mb-0" style="cursor:pointer;">
-                        Change Photo
-                        <input type="file" name="ProfileImage" accept="image/*" onchange="markChangePhoto(this)" style="display:none;" />
+            <div class="mb-3 d-flex flex-column align-items-center">
+                @if (!string.IsNullOrEmpty(Model.ImagePath))
+                {
+                    <div class="profile-photo-container mb-2">
+                        <img src="~/uploads/@Model.ImagePath" alt="Profile Image" class="profile-img" />
+                    </div>
+
+                    <div id="imageButtons" class="d-none justify-content-center gap-2 mt-2">
+                        <button type="button" onclick="markDeletePhoto()" class="btn btn-sm btn-danger rounded-pill px-3">
+                            <i class="bi bi-trash me-1"></i> Delete
+                        </button>
+                        <label class="btn btn-sm btn-secondary rounded-pill px-3 mb-0">
+                            <i class="bi bi-upload me-1"></i> Change
+                            <input type="file" name="ProfileImage" accept="image/*" onchange="markChangePhoto(this)" style="display:none;" />
+                        </label>
+                    </div>
+                }
+                else
+                {
+                    <label class="profile-photo-container mb-2" style="cursor:pointer;" id="uploadLabel">
+                        <i id="profileIcon" class="bi bi-person-circle text-secondary d-flex justify-content-center align-items-center profile-img"></i>
+                        <input type="file" name="ProfileImage" accept="image/*" onchange="this.form.submit();" style="display:none;" />
                     </label>
+                }
+            </div>
+
+            <h3 class="text-center mb-4 d-flex justify-content-center gap-2 align-items-center">
+                <span id="nameDisplay" class="fw-bold">@Model.FirstName @Model.LastName</span>
+                <input type="text" id="FirstNameInput" name="FirstName" value="@Model.FirstName" class="form-control" style="display:none; width: 45%;" />
+                <input type="text" id="LastNameInput" name="LastName" value="@Model.LastName" class="form-control" style="display:none; width: 45%;" />
+            </h3>
+
+            <div class="input-group mb-3">
+                <span class="input-group-text"><i class="bi bi-telephone-fill"></i></span>
+                <div class="form-floating">
+                    <input type="text" name="PhoneNumber" value="@Model.PhoneNumber" readonly class="form-control" placeholder="Phone Number" />
+                    <label>Phone Number</label>
                 </div>
-            }
-            else
-            {
-                <label class="profile-photo" style="cursor:pointer;" id="uploadLabel">
-                    <span class="placeholder-text">Upload Photo</span>
-                    <input type="file" name="ProfileImage" accept="image/*" onchange="this.form.submit();" style="display:none;" />
-                </label>
-            }
-        </div>
+            </div>
 
-        <h3 class="text-center mb-4 d-flex justify-content-center gap-2 align-items-center">
-            <span id="nameDisplay" class="fw-bold" style="font-size: 1.5rem;">
-                @Model.FirstName @Model.LastName
-            </span>
+            <div class="input-group mb-3">
+                <span class="input-group-text"><i class="bi bi-geo-alt-fill"></i></span>
+                <div class="form-floating">
+                    <input type="text" name="City" value="@Model.City" readonly class="form-control" placeholder="City" />
+                    <label>City</label>
+                </div>
+            </div>
 
-            <input type="text" id="FirstNameInput" name="FirstName" value="@Model.FirstName" class="form-control text-center fw-bold" style="display:none; width: 150px;" />
-            <input type="text" id="LastNameInput" name="LastName" value="@Model.LastName" class="form-control text-center fw-bold" style="display:none; width: 150px; margin-top: 0;" />
-        </h3>
+            <div class="input-group mb-3">
+                <span class="input-group-text"><i class="bi bi-flag-fill"></i></span>
+                <div class="form-floating">
+                    <input type="text" name="Country" value="@Model.Country" readonly class="form-control" placeholder="Country" />
+                    <label>Country</label>
+                </div>
+            </div>
 
-        <div class="mb-3">
-            <label class="form-label">Phone Number</label>
-            <input type="text" name="PhoneNumber" value="@Model.PhoneNumber" readonly class="form-control" />
-        </div>
+            <div class="input-group mb-3">
+                <span class="input-group-text"><i class="bi bi-text-paragraph"></i></span>
+                <div class="form-floating">
+                    <textarea name="Description" rows="3" readonly class="form-control" placeholder="Description" style="height: 100px;">@Model.Description</textarea>
+                    <label>Description</label>
+                </div>
+            </div>
 
-        <div class="mb-3">
-            <label class="form-label">City</label>
-            <input type="text" name="City" value="@Model.City" readonly class="form-control" />
-        </div>
+            <div class="input-group mb-3">
+                <span class="input-group-text"><i class="bi bi-tools"></i></span>
+                <div class="form-floating">
+                    <input type="text" value="@Model.ServiceName" readonly class="form-control" placeholder="Service" />
+                    <label>Service</label>
+                </div>
+            </div>
 
-        <div class="mb-3">
-            <label class="form-label">Country</label>
-            <input type="text" name="Country" value="@Model.Country" readonly class="form-control" />
-        </div>
+            <div class="input-group mb-3">
+                <span class="input-group-text"><i class="bi bi-check-circle-fill"></i></span>
+                <div class="form-floating">
+                    <select name="ProviderStatus" class="form-select" disabled>
+                        <option value="Available" selected="@(Model.ProviderStatus == "Available")">Available</option>
+                        <option value="Inactive" selected="@(Model.ProviderStatus == "Inactive")">Unavailable</option>
+                        <option value="OnVacation" selected="@(Model.ProviderStatus == "OnVacation")">On Vacation</option>
+                    </select>
+                    <label>Availability Status</label>
+                </div>
+            </div>
 
-        <div class="mb-3">
-            <label class="form-label">Description</label>
-            <textarea name="Description" rows="3" readonly class="form-control">@Model.Description</textarea>
-        </div>
-
-        <div class="mb-3">
-            <label class="form-label">Service</label>
-            <input type="text" value="@Model.ServiceName" readonly class="form-control" />
-        </div>
-
-        <!-- إضافة اختيار الحالة هنا -->
-        <div class="mb-3">
-            <label class="form-label">Availability Status</label>
-            <select name="ProviderStatus" class="form-control" disabled>
-                <option value="Available" selected="@(Model.ProviderStatus == "Available")">Available</option>
-                <option value="Inactive" selected="@(Model.ProviderStatus == "Inactive")">Unavailable</option>
-                <option value="OnVacation" selected="@(Model.ProviderStatus == "OnVacation")">On Vacation</option>
-            </select>
-        </div>
-
-        <div class="d-flex justify-content-between">
-            <button type="button" id="editBtn" class="btn btn-outline-primary">Edit</button>
-            <button type="submit" id="saveBtn" class="btn btn-success d-none">Save</button>
-        </div>
-    </form>
+            <div class="d-flex justify-content-end gap-2 mt-4">
+                <button type="button" id="editBtn" class="btn btn-primary px-4">Edit</button>
+                <button type="submit" id="saveBtn" class="btn btn-success d-none px-4">Save</button>
+                <button type="button" id="cancelBtn" class="btn btn-secondary d-none px-4">Cancel</button>
+            </div>
+        </form>
+    </div>
 </div>
 
 @section Scripts {
     <script>
         const editBtn = document.getElementById('editBtn');
         const saveBtn = document.getElementById('saveBtn');
+        const cancelBtn = document.getElementById('cancelBtn');
         const nameDisplay = document.getElementById('nameDisplay');
         const firstNameInput = document.getElementById('FirstNameInput');
         const lastNameInput = document.getElementById('LastNameInput');
@@ -100,14 +121,13 @@
             firstNameInput.style.display = 'inline-block';
             lastNameInput.style.display = 'inline-block';
 
-            const inputs = form.querySelectorAll('input, textarea');
+            const inputs = form.querySelectorAll("input[type='text'], textarea");
             inputs.forEach(function (input) {
-                if (input !== firstNameInput && input !== lastNameInput && input.name !== '' && input.type !== 'hidden') {
+                if (input !== firstNameInput && input !== lastNameInput) {
                     input.removeAttribute('readonly');
                 }
             });
 
-            // تفعيل الـ select عند الضغط على Edit
             const selects = form.querySelectorAll('select');
             selects.forEach(function (select) {
                 select.removeAttribute('disabled');
@@ -115,11 +135,21 @@
 
             if (imageButtons) {
                 imageButtons.classList.remove('d-none');
+                imageButtons.classList.add('d-flex');
             }
 
             editBtn.classList.add('d-none');
             saveBtn.classList.remove('d-none');
+            if (cancelBtn) {
+                cancelBtn.classList.remove('d-none');
+            }
         });
+
+        if (cancelBtn) {
+            cancelBtn.addEventListener('click', function() {
+                window.location.reload();
+            });
+        }
 
         function markDeletePhoto() {
             document.getElementById("ActionType").value = "delete";
@@ -134,9 +164,4 @@
         }
     </script>
 
-    <style>
-        .profile-photo img.profile-img {
-            border-radius: 50%;
-        }
-    </style>
 }

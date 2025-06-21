@@ -1,40 +1,105 @@
-﻿@model List<HomeServices.Models.Messages>
+﻿@using System.Text.RegularExpressions
+@model List<HomeServices.Models.Messages>
 
 @{
+    ViewData["Title"] = "Chat with " + ViewBag.ReceiverName;
+    Layout = "~/Views/_Layout.cshtml";
     var currentUserId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
     var receiverId = ViewBag.ReceiverId as string;
-
-
-
+    var receiverImagePath = ViewBag.ReceiverImagePath as string;
+    var receiverName = ViewBag.ReceiverName as string;
+    var receiverInitials = string.IsNullOrEmpty(receiverName) ? "" : receiverName.Split(' ').First().Substring(0, 1).ToUpper();
 }
-<div class="chat-card">
-    <div class="chat-header">@ViewBag.ReceiverName</div>
 
-    <div class="chat-window d-flex flex-column">
-        @foreach (var msg in Model)
-        {
-            if (msg.SenderId == currentUserId)
-            {
-                <div class="chat-message you">
-                    <strong>You:</strong> @msg.Content
+<div class="chat-container">
+    <div class="chat-card">
+        <!-- Chat Header -->
+        <div class="chat-header">
+            <div class="user-info">
+                @if (!string.IsNullOrEmpty(receiverImagePath))
+                {
+                    <img src="~/uploads/@receiverImagePath" alt="Avatar" class="avatar" />
+                }
+                else
+                {
+                    <div class="avatar-initials">@receiverInitials</div>
+                }
+                <div class="user-details">
+                    <div class="user-name">@receiverName</div>
+                    <div class="user-status">Online</div>
                 </div>
-            }
-            else
-            {
-                <div class="chat-message other">
-                    <strong>@msg.Sender.FirstName:</strong> @msg.Content
-                </div>
-            }
-        }
-    </div>
-
-    <form asp-controller="Message" asp-action="Send" method="post">
-        <input type="hidden" name="receiverId" value="@receiverId" />
-        <div class="chat-input">
-            <textarea name="content" placeholder="Type your message..." required></textarea>
-            <button type="submit" title="Send">
-                <i class="bi bi-send-fill"></i>
-            </button>
+            </div>
+            <div class="chat-actions">
+                <i class="bi bi-telephone-fill"></i>
+                <i class="bi bi-three-dots-vertical"></i>
+            </div>
         </div>
-    </form>
+
+        <!-- Chat Window -->
+        <div class="chat-window" id="chatWindow">
+            @{
+                DateTime? lastDate = null;
+                foreach (var msg in Model)
+                {
+                    if (lastDate == null || msg.SentAt.Date != lastDate.Value.Date)
+                    {
+                        <div class="date-separator"><span>@GetDateSeparator(msg.SentAt)</span></div>
+                        lastDate = msg.SentAt.Date;
+                    }
+
+                    bool isMine = msg.SenderId == currentUserId;
+                    bool isRtl = IsRtl(msg.Content);
+                    <div class="message-bubble-wrapper @(isMine ? "sent" : "received")">
+                        <div class="message-bubble @(isMine ? "sent" : "received")">
+                            <div class="message-content" dir="@(isRtl ? "rtl" : "ltr")">@msg.Content</div>
+                            <div class="message-timestamp">@msg.SentAt.ToString("h:mm tt")</div>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+
+        <!-- Chat Input Area -->
+        <div class="chat-input-area">
+            <form asp-controller="Message" asp-action="Send" method="post" class="w-100">
+                <input type="hidden" name="receiverId" value="@receiverId" />
+                <div class="chat-input-group">
+                    <textarea name="content" class="form-control chat-input" placeholder="Type a message..." rows="1" required></textarea>
+                    <button type="submit" class="send-btn" title="Send"><i class="bi bi-send-fill"></i></button>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
+
+@functions {
+    public string GetDateSeparator(DateTime date)
+    {
+        if (date.Date == DateTime.Today) return "Today";
+        if (date.Date == DateTime.Today.AddDays(-1)) return "Yesterday";
+        return date.ToString("D");
+    }
+
+    public bool IsRtl(string text)
+    {
+        if (string.IsNullOrEmpty(text)) return false;
+        return Regex.IsMatch(text, @"\p{IsArabic}");
+    }
+}
+
+
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const chatWindow = document.getElementById("chatWindow");
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+
+            const textarea = document.querySelector('.chat-input');
+            textarea.addEventListener('input', function () {
+                this.style.height = 'auto';
+                this.style.height = (this.scrollHeight) + 'px';
+            });
+        });
+    </script>
+}

@@ -42,7 +42,7 @@
                     <tr>
                         <td>@order.OrderId</td>
                         <td>@order.OrdersDate.ToString("dd-MMM-yyyy")</td>
-                        <td>@order.OrdersTime.ToString("hh:mm tt")</td>
+                        <td>@order.OrdersTime.ToString(@"hh\:mm")</td>
                         <td>@order.ServiceName</td>
                         <td>@order.ProviderName</td>
                         <td>@order.PersonName</td>

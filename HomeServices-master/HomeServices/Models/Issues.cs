@@ -17,8 +17,7 @@ namespace HomeServices.Models
         public ReportStatus Status { get; set; }
 
 
-        [AllowNull]
-        public string? AdminNotes { get; set; }
+
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;

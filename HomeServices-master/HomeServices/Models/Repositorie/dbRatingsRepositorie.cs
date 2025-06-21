@@ -13,6 +13,7 @@ namespace HomeServices.Models.Repositorie
         public void Add(Ratings entity)
         {
             db.Ratings.Add(entity);
+            db.SaveChanges();
         }
 
         public void Delete(int id, Ratings entity)

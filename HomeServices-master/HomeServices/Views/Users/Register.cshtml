@@ -5,138 +5,353 @@
     Layout = "~/Views/_LayoutLogin.cshtml";
 }
 
-<h2>Register</h2>
+<div class="container-fluid  d-flex align-items-center justify-content-center bg-light py-4">
 
-<!-- أزرار اختيار نوع المستخدم -->
-<div class="btn-group mb-3">
-    <button type="button" class="select-btn active" id="userBtn">Client</button>
-    <button type="button" class="select-btn" id="providerBtn">Provider</button>
+    <div class="row w-100 justify-content-center">
+
+        <div class="col-12 col-sm-10 col-md-8 col-lg-6 col-xl-5">
+
+            <div class="card shadow-sm border-0">
+
+                <div class="card-body p-4">
+
+                    <h2 class="card-title text-center mb-4 fw-bold text-dark">Register as User</h2>
+
+
+
+                    <!-- User Type Toggle -->
+
+                    <div class="d-flex justify-content-center mb-4">
+                        <button type="button" class="active btn btn-outline-primary px-4" id="userBtn">Client</button>
+                        <button type="button" class="btn btn-outline-primary px-4" id="providerBtn">Provider</button>
+                    </div>
+
+
+
+                    <form asp-action="Register" method="post">
+
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+
+
+
+                        <!-- Name Fields -->
+
+                        <div class="row mb-3">
+
+                            <div class="col-md-6">
+
+                                <label asp-for="FirstName" class="form-label text-dark fw-semibold">First Name</label>
+
+                                <input asp-for="FirstName" class="form-control form-control-lg border-0 bg-light" placeholder="Enter first name" />
+
+                                <span asp-validation-for="FirstName" class="text-danger small"></span>
+
+                            </div>
+
+                            <div class="col-md-6">
+
+                                <label asp-for="LastName" class="form-label text-dark fw-semibold">Last Name</label>
+
+                                <input asp-for="LastName" class="form-control form-control-lg border-0 bg-light" placeholder="Enter last name" />
+
+                                <span asp-validation-for="LastName" class="text-danger small"></span>
+
+                            </div>
+
+                        </div>
+
+
+
+                        <!-- Email -->
+
+                        <div class="mb-3">
+
+                            <label asp-for="Email" class="form-label text-dark fw-semibold">Email</label>
+
+                            <input asp-for="Email" class="form-control form-control-lg border-0 bg-light" placeholder="Enter your email" />
+
+                            <span asp-validation-for="Email" class="text-danger small"></span>
+
+                        </div>
+
+
+
+                        <!-- Phone Number -->
+
+                        <div class="mb-3">
+
+                            <label asp-for="Phone" class="form-label text-dark fw-semibold">Phone Number</label>
+
+                            <input asp-for="Phone" class="form-control form-control-lg border-0 bg-light" placeholder="Enter phone number" />
+
+                            <span asp-validation-for="Phone" class="text-danger small"></span>
+
+                        </div>
+
+
+
+                        <!-- Location Fields -->
+
+                        <div class="row mb-3">
+
+                            <div class="mb-3">
+                                <label class="form-label text-dark fw-semibold">Country</label>
+                                <select id="countrySelect" name="Country" class="form-control form-control-lg border-0 bg-light" required>
+                                    <option value="">-- Select Country --</option>
+                                    <option value="Palestine">Palestine</option>
+                                    <option value="Jordan">Jordan</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label text-dark fw-semibold">City</label>
+                                <select id="citySelect" name="City" class="form-control form-control-lg border-0 bg-light" required>
+                                    <option value="">-- Select City --</option>
+                                </select>
+                            </div>
+
+                        </div>
+
+
+
+                        <!-- Gender -->
+
+                        <div class="mb-3">
+
+                            <label class="form-label text-dark fw-semibold">Gender</label>
+
+                            <div class="d-flex gap-4 mt-2">
+
+                                <div class="form-check">
+
+                                    <input asp-for="Gender" class="form-check-input" type="radio" value="Male" id="genderMale" />
+
+                                    <label class="form-check-label text-muted" for="genderMale">Male</label>
+
+                                </div>
+
+                                <div class="form-check">
+
+                                    <input asp-for="Gender" class="form-check-input" type="radio" value="Female" id="genderFemale" />
+
+                                    <label class="form-check-label text-muted" for="genderFemale">Female</label>
+
+                                </div>
+
+                            </div>
+
+                            <span asp-validation-for="Gender" class="text-danger small"></span>
+
+                        </div>
+
+
+
+                        <!-- Password Fields -->
+
+                        <div class="row mb-4">
+
+                            <div class="col-md-6">
+
+                                <label asp-for="Password" class="form-label text-dark fw-semibold">Password</label>
+
+                                <input asp-for="Password" class="form-control form-control-lg border-0 bg-light" placeholder="Enter password" />
+
+                                <span asp-validation-for="Password" class="text-danger small"></span>
+
+                            </div>
+
+                            <div class="col-md-6">
+
+                                <label asp-for="ConfirmPassword" class="form-label text-dark fw-semibold">Confirm Password</label>
+
+                                <input asp-for="ConfirmPassword" class="form-control form-control-lg border-0 bg-light" placeholder="Confirm password" />
+
+                                <span asp-validation-for="ConfirmPassword" class="text-danger small"></span>
+
+                            </div>
+
+                        </div>
+
+                        <!-- حقل مخفي لتخزين الدور -->
+                        <input type="hidden" asp-for="Role" id="roleInput" />
+
+                        <!-- الحقول الخاصة بمقدم الخدمة -->
+
+                        <div id="providerFields" style="display: none;" class="row mb-4">
+
+                            <div class="col-md-6 ">
+
+                                <label asp-for="Age" class="form-label text-dark fw-semibold" min="18" max="80"></label>
+                                <input asp-for="Age" class="form-control form-control-lg border-0 bg-light" />
+                                <span asp-validation-for="Age" class="text-danger small"></span>
+
+
+                            </div>
+
+                            <div class="col-md-6">
+
+                                <label asp-for="Description" class="form-label text-dark fw-semibold"></label>
+                                <input asp-for="Description" class="form-control form-control-lg border-0 bg-light" />
+                                <span asp-validation-for="Description" class="text-danger small"></span>
+
+                            </div>
+
+                            <div class="col-md-6">
+                                <label asp-for="ServicesId" class="form-label text-dark fw-semibold">Service</label>
+                                <select asp-for="ServicesId" class="form-control form-control-lg border-0 bg-light" asp-items="Model.ServicesList">
+                                    <option value="">-- Select Service --</option>
+                                </select>
+                                <span asp-validation-for="ServicesId" class="text-danger"></span>
+
+                            </div>
+                        </div>
+
+
+                        <button type="submit" class="btn btn-success btn-lg w-100 mb-3 fw-semibold" id="registerBtn">
+
+                            Register as User
+
+                        </button>
+
+                    </form>
+
+
+
+                    <div class="text-center mt-3">
+
+                        <small class="text-muted">
+
+                            Already have an account?
+
+                            <a asp-action="Login" class="text-decoration-none">Sign in here</a>
+
+                        </small>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
 </div>
 
-<!-- نموذج التسجيل -->
-<form asp-action="Register" method="post">
-    @* <div asp-validation-summary="All" class="text-danger"></div> *@
-
-    <!-- الحقول الأساسية -->
-    <div class="form-group">
-        <label asp-for="FirstName"></label>
-        <input asp-for="FirstName" class="form-control" />
-        <span asp-validation-for="FirstName" class="text-danger"></span>
-    </div>
-
-    <div class="form-group">
-        <label asp-for="LastName"></label>
-        <input asp-for="LastName" class="form-control" />
-        <span asp-validation-for="LastName" class="text-danger"></span>
-    </div>
-
-    <div class="form-group">
-        <label asp-for="Email"></label>
-        <input asp-for="Email" class="form-control" />
-        <span asp-validation-for="Email" class="text-danger"></span>
-    </div>
-
-    <div class="form-group">
-        <label asp-for="Phone"></label>
-        <input asp-for="Phone" class="form-control" />
-        <span asp-validation-for="Phone" class="text-danger"></span>
-    </div>
-
-    <div class="form-group">
-        <label asp-for="City"></label>
-        <input asp-for="City" class="form-control" />
-        <span asp-validation-for="City" class="text-danger"></span>
-    </div>
-
-    <div class="form-group">
-        <label asp-for="Country"></label>
-        <input asp-for="Country" class="form-control" />
-        <span asp-validation-for="Country" class="text-danger"></span>
-    </div>
-
-    <div class="form-group">
-        <label asp-for="Gender"></label>
-        <select asp-for="Gender" class="form-control">
-            <option value="">-- Select Gender --</option>
-            <option value="male">Male</option>
-            <option value="female">Female</option>
-        </select>
-        <span asp-validation-for="Gender" class="text-danger"></span>
-    </div>
-
-    <div class="form-group">
-        <label asp-for="Password"></label>
-        <input asp-for="Password" class="form-control" />
-        <span asp-validation-for="Password" class="text-danger"></span>
-    </div>
-
-    <div class="form-group">
-        <label asp-for="ConfirmPassword"></label>
-        <input asp-for="ConfirmPassword" class="form-control" />
-        <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
-    </div>
-
-    <!-- حقل مخفي لتخزين الدور -->
-    <input type="hidden" asp-for="Role" id="roleInput" />
-
-    <!-- الحقول الخاصة بمقدم الخدمة -->
-    <div id="providerFields" style="display: none;">
-        <div class="form-group">
-            <label asp-for="Age"></label>
-            <input asp-for="Age" class="form-control" />
-            <span asp-validation-for="Age" class="text-danger"></span>
-        </div>
-
-        <div class="form-group">
-            <label asp-for="Description"></label>
-            <input asp-for="Description" class="form-control" />
-            <span asp-validation-for="Description" class="text-danger"></span>
-        </div>
-
-        <div class="form-group">
-            <label asp-for="ServicesId">Service</label>
-            <select asp-for="ServicesId" class="form-control" asp-items="Model.ServicesList">
-                <option value="">-- Select Service --</option>
-            </select>
-            <span asp-validation-for="ServicesId" class="text-danger"></span>
-        </div>
-    </div>
-
-    <button type="submit" class="btn btn-success">Register</button>
-</form>
-
 @section Scripts {
-    <partial name="_ValidationScriptsPartial" />
+
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+
+
     <script>
+
+             const palestineCities = [
+            "Ramallah and Al-Bireh", "Nablus", "Hebron", "Tulkarm", "Jenin",
+            "Qalqilya", "Bethlehem", "Jericho", "Salfit", "Tubas",
+            "Gaza", "Khan Younis", "Rafah", "Deir al-Balah", "North Gaza"
+        ];
+
+        const jordanCities = [
+            "Amman", "Zarqa", "Irbid", "Balqa", "Mafraq",
+            "Karak", "Ma'an", "Tafilah", "Jerash", "Ajloun",
+            "Aqaba", "Madaba"
+        ];
+
+        document.getElementById('countrySelect').addEventListener('change', function () {
+            const country = this.value;
+            const citySelect = document.getElementById('citySelect');
+            citySelect.innerHTML = '<option value="">-- Select City --</option>';
+
+            let cities = [];
+            if (country === 'Palestine') {
+                cities = palestineCities;
+            } else if (country === 'Jordan') {
+                cities = jordanCities;
+            }
+
+            cities.forEach(city => {
+                const option = document.createElement('option');
+                option.value = city;
+                option.text = city;
+                citySelect.appendChild(option);
+            });
+        });
+
         function toggleRole(roleValue) {
             const providerFields = document.getElementById("providerFields");
             const roleInput = document.getElementById("roleInput");
+            const registerBtn = document.getElementById("registerBtn"); // الزر
 
             roleInput.value = roleValue;
 
             if (roleValue === 2) {
                 providerFields.style.display = "block";
+                registerBtn.innerText = "Register by Provider";
             } else {
                 providerFields.style.display = "none";
+                registerBtn.innerText = "Register as User";
             }
         }
 
-        document.getElementById("userBtn").addEventListener("click", function () {
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log("#####");
+              document.getElementById("userBtn").addEventListener("click", function () {
+                 console.log("#####");
             toggleRole(1); // Client
             this.classList.add("active");
             document.getElementById("providerBtn").classList.remove("active");
         });
 
         document.getElementById("providerBtn").addEventListener("click", function () {
+           console.log("#####");
             toggleRole(2); // Provider
             this.classList.add("active");
             document.getElementById("userBtn").classList.remove("active");
         });
 
+
         // Default role when page loads
         window.addEventListener("load", function () {
             toggleRole(1);
         });
+
+
+            // Add focus states for inputs
+
+            const inputs = document.querySelectorAll('.form-control');
+
+
+
+            inputs.forEach(input => {
+
+                input.addEventListener('focus', function() {
+
+                    this.style.boxShadow = '0 0 0 0.2rem rgba(13, 110, 253, 0.25)';
+
+                    this.style.borderColor = '#86b7fe';
+
+                });
+
+
+
+                input.addEventListener('blur', function() {
+
+                    this.style.boxShadow = '';
+
+                    this.style.borderColor = '';
+
+                });
+
+            });
+             });
+
+
+
     </script>
 }
 

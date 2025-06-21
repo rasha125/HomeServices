@@ -22,7 +22,11 @@ namespace HomeServices.Controllers
             _userManager = userManager;
             _signInManager = signInManager;
         }
-
+        [HttpGet]
+        public IActionResult Home()
+        {
+            return View();
+        }
         [HttpGet]
         public IActionResult Register()
         {

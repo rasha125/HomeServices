@@ -1,22 +1,161 @@
-﻿
+﻿<style>
+    /* لإعطاء خلفية بسيطة للصفحة */
+    body {
+        background-color: #f8f9fa;
+    }
+
+    /* تصميم البطاقات الرئيسي */
+    .card {
+        border: none;
+        border-radius: 0.75rem;
+        transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1) !important;
+        }
+
+    .card-header {
+        background-color: #ffffff;
+        border-bottom: 1px solid #dee2e6;
+        font-size: 1.1rem;
+        font-weight: 600;
+        border-top-left-radius: 0.75rem;
+        border-top-right-radius: 0.75rem;
+    }
+
+    .list-group-item {
+        border-bottom: 1px solid #f0f0f0 !important;
+        padding-top: 1rem;
+        padding-bottom: 1rem;
+    }
+
+        .list-group-item:last-child {
+            border-bottom: none !important;
+        }
+
+    /* تصميم خاص لحالة الطلب */
+    .order-status {
+        font-weight: bold;
+        padding: 0.25rem 0.6rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        color: #fff;
+        background-color: #0d6efd; /* لون افتراضي أزرق (In Progress) */
+    }
+
+        /* يمكنك تخصيص ألوان الحالة إذا أردت */
+        /* ملاحظة: هذا يتطلب تعديل الكود لإضافة كلاس بناءً على الحالة */
+        .order-status.completed {
+            background-color: #198754; /* أخضر */
+        }
+
+        .order-status.pending {
+            background-color: #ffc107; /* أصفر */
+            color: #000;
+        }
+
+        .order-status.cancelled {
+            background-color: #dc3545; /* أحمر */
+        }
+
+
+    /* لإضافة أيقونات (اختياري) */
+    /* تأكد من أنك تستخدم مكتبة مثل Font Awesome */
+    .me-2 {
+        margin-right: 0.5rem;
+    }
+
+    .ms-3 {
+        margin-left: 1rem;
+    }
+
+    .fa-users-cog, .fa-clipboard-list, .fa-user, .fa-user-tie, .fa-calendar-alt, .fa-clock {
+        color: #0d6efd;
+    }
+
+    .text-muted .fas {
+        color: #6c757d;
+    }
+</style>
+
 @{
     ViewData["Title"] = "Home";
     Layout = "~/Views/_Layout.cshtml";
 }
 
-<h2>مرحبًا، @Model.PersonInfo.User.FirstName @Model.PersonInfo.User.LastName</h2>
-<h3 class="my-3">Nearest Technicians</h3>
-<ul class="list-group mb-4">
-    @foreach (var tech in Model.NearbyProviders)
-    {
-        <li class="list-group-item">@tech.User.FirstName @tech.User.LastName</li>
-    }
-</ul>
+<div class="container mt-4">
 
-<h3 class="my-3">My Orders</h3>
-<ul class="list-group">
-    @foreach (var order in Model.MyOrders)
-    {
-        <li class="list-group-item">@order.OrdersId @order.Persons.User.FirstName @order.Persons.User.LastName  @order.Status</li>
-    }
-</ul>
+    <div class="card shadow-sm mb-4">
+        <div class="card-body text-center p-3">
+            <h4 class="card-title mb-1">مرحبًا، @Model.PersonInfo.User.FirstName @Model.PersonInfo.User.LastName</h4>
+            <p class="card-text text-muted mb-0">يسعدنا رؤيتك مرة أخرى</p>
+        </div>
+    </div>
+    <div class="row">
+
+        <div class="col-lg-6 mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-header">
+                    <h3 class="my-2">
+                        <i class="fas fa-users-cog me-2"></i>
+                        Nearest Technicians in @Model.PersonInfo.User.City
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        @foreach (var tech in Model.NearbyProviders)
+                        {
+                            <!-- قمنا بتعديل بسيط على العنصر ليستوعب التصميم الجديد -->
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    <i class="fas fa-user me-2 text-primary"></i> <!-- أيقونة اختيارية -->
+                                    @tech.User.FirstName @tech.User.LastName
+                                </div>
+                                <span class="badge bg-secondary rounded-pill">@tech.User.City</span>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- قسم طلباتي -->
+        <div class="col-lg-6 mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-header">
+                    <h3 class="my-2">
+                        <i class="fas fa-clipboard-list me-2"></i>
+                        My Orders
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        @foreach (var order in Model.MyOrders)
+                        {
+                            <li class="list-group-item">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="fw-bold">Order #: @order.OrdersId</span>
+                                    <span class="order-status">@order.Status</span>
+                                </div>
+                                <div class="text-muted small">
+                                    <div>
+                                        <i class="fas fa-user-tie me-2"></i>
+                                        Provider: @order.Providers.User.FirstName @order.Providers.User.LastName
+                                    </div>
+                                    <div>
+                                        <i class="fas fa-calendar-alt me-2"></i>
+                                        @order.OrdersDate.ToShortDateString()
+                                        <i class="fas fa-clock me-2 ms-3"></i>
+                                        @order.OrdersTime.ToString(@"hh\:mm")
+                                    </div>
+                                </div>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

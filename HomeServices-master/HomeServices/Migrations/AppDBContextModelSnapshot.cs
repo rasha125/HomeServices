@@ -30,9 +30,6 @@ namespace HomeServices.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IssuesId"));
 
-                    b.Property<string>("AdminNotes")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
@@ -125,8 +122,8 @@ namespace HomeServices.Migrations
                     b.Property<DateTime>("OrdersDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("OrdersTime")
-                        .HasColumnType("datetime2");
+                    b.Property<TimeSpan>("OrdersTime")
+                        .HasColumnType("time");
 
                     b.Property<int>("PersonId")
                         .HasColumnType("int");

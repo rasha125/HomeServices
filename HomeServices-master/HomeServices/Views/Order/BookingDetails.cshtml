@@ -1,114 +1,200 @@
 ﻿@model HomeServices.ViewModels.VMCompletedOrder
 
 @{
-    ViewData["Title"] = "Booking Details";
+    ViewData["Title"] = "Order Details #" + Model.OrderId;
     Layout = "~/Views/_Layout.cshtml";
 }
 
-<div class="container mt-5">
-    <h2 class="mb-4">Booking Details</h2>
+<div class="page-container">
+    <div class="page-header text-center">
+        <h1 class="display-5 fw-bold">Order Details</h1>
+    </div>
 
-    <div class="card-body">
-        <div class="booking-details-list">
-
-            <!-- Order ID -->
+    <div class="details-card">
+        <!-- Order & Service Information -->
+        <div class="details-section">
+            <h5 class="section-title"><i class="bi bi-box-seam me-2"></i> Service & Schedule</h5>
             <div class="detail-item">
-                <div class="detail-label">
-                    <i class="fi fi-rr-hashtag"></i> Order ID
-                </div>
-                <div class="detail-value">
-                    @Model.OrderId
-                </div>
+                <span class="detail-label">Service:</span>
+                <span class="detail-value fw-bold">@Model.ServiceName</span>
             </div>
-
-            <!-- Date -->
             <div class="detail-item">
-                <div class="detail-label">
-                    <i class="fi fi-rr-calendar"></i> Date
-                </div>
-                <div class="detail-value">
-                    @Model.OrdersDate.ToString("dd-MMM-yyyy")
-                </div>
+                <span class="detail-label">Date & Time:</span>
+                <span class="detail-value">@Model.OrdersDate.ToString("dd MMM yyyy") at @(new DateTime(Model.OrdersTime.Ticks).ToString("hh:mm tt"))</span>
             </div>
-
-            <!-- Time -->
             <div class="detail-item">
-                <div class="detail-label">
-                    <i class="fi fi-rr-clock-three"></i> Time
-                </div>
-                <div class="detail-value">
-                    @Model.OrdersTime.ToString("hh:mm tt")
-                </div>
-            </div>
-
-            <!-- Service -->
-            <div class="detail-item">
-                <div class="detail-label">
-                    <i class="fi fi-rr-briefcase"></i> Service
-                </div>
-                <div class="detail-value">
-                    @Model.ServiceName
-                </div>
-            </div>
-
-            <!-- Provider -->
-            <div class="detail-item">
-                <div class="detail-label">
-                    <i class="fi fi-rr-user-md"></i> Provider
-                </div>
-                <div class="detail-value">
-                    @Model.ProviderName
-                </div>
-            </div>
-
-            <!-- Client -->
-            <div class="detail-item">
-                <div class="detail-label">
-                    <i class="fi fi-rr-user"></i> Client
-                </div>
-                <div class="detail-value">
-                    @Model.PersonName
-                </div>
-            </div>
-
-            <!-- Address -->
-            <div class="detail-item">
-                <div class="detail-label">
-                    <i class="fi fi-rr-marker"></i> Address
-                </div>
-                <div class="detail-value">
-                    @Model.Address
-                    @if (!string.IsNullOrEmpty(Model.MapUrl))
-                    {
-                        <a href="@Model.MapUrl" target="_blank" class="map-link">
-                            <i class="fi fi-rr-map-marker"></i> Map
-                        </a>
-                    }
-                </div>
-            </div>
-
-            <!-- Description -->
-            <div class="detail-item">
-                <div class="detail-label">
-                    <i class="fi fi-rr-comment-alt"></i> Description
-                </div>
-                <div class="detail-value">
-                    @Model.Description
-                </div>
-            </div>
-
-            <!-- Status -->
-            <div class="detail-item">
-                <div class="detail-label">
-                    <i class="fi fi-rr-info"></i> Status
-                </div>
-                <div class="detail-value">
-                    @(string.IsNullOrEmpty(Model.Status) ? "Pending" : Model.Status)
-                </div>
+                <span class="detail-label">Status:</span>
+                <span class="detail-value badge bg-success">@Model.Status</span>
             </div>
         </div>
 
-        <a href="@Url.Action("CompletedOrders")" class="btn btn-secondary mt-4">Back to Orders</a>
-    </div>
+        <!-- People Information -->
+        <div class="details-section">
+            <h5 class="section-title"><i class="bi bi-people-fill me-2"></i> Involved Parties</h5>
+            <div class="detail-item">
+                <span class="detail-label">Client:</span>
+                <span class="detail-value">@Model.PersonName</span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">Provider:</span>
+                <span class="detail-value">@Model.ProviderName</span>
+            </div>
+        </div>
+
+        <!-- Location & Description -->
+        <div class="details-section">
+            <h5 class="section-title"><i class="bi bi-geo-alt-fill me-2"></i> Location & Notes</h5>
+            <div class="detail-item">
+                <span class="detail-label">Address:</span>
+                <span class="detail-value">@Model.Address</span>
+            </div>
+            @if (!string.IsNullOrEmpty(Model.MapUrl))
+            {
+                <div class="detail-item">
+                    <span class="detail-label">Map Link:</span>
+                    <a href="@Model.MapUrl" target="_blank" class="detail-value map-link">View on Map <i class="bi bi-box-arrow-up-right ms-1"></i></a>
+                </div>
+            }
+            @if (!string.IsNullOrEmpty(Model.Description))
+            {
+                <div class="detail-item description">
+                    <span class="detail-label">Client Notes:</span>
+                    <p class="detail-value">@Model.Description</p>
+                </div>
+            }
+        </div>
+
+        <!-- Client Rating Section -->
+        @if (Model.Status == "Completed" && Model.RatingValue.HasValue && Model.RatingValue > 0)
+        {
+            <div class="details-section">
+                <h5 class="section-title"><i class="bi bi-star-fill text-warning me-2"></i> Client Feedback</h5>
+                <div class="detail-item">
+                    <span class="detail-label">Rating:</span>
+                    <div class="detail-value">
+                        @for (int i = 1; i <= 5; i++)
+                        {
+                            <i class="bi @(i <= Model.RatingValue ? "bi-star-fill text-warning" : "bi-star")"></i>
+                        }
+                    </div>
+                </div>
+                @if (!string.IsNullOrEmpty(Model.RatingComment))
+                {
+                    <div class="detail-item description">
+                        <span class="detail-label">Comment:</span>
+                        <blockquote class="detail-value fst-italic">"@Model.RatingComment"</blockquote>
+                    </div>
+                }
+            </div>
+        }
     </div>
 
+    <div class="text-center mt-4">
+        <a href="@Url.Action("CompletedOrders")" class="btn btn-secondary">
+            <i class="bi bi-arrow-left me-1"></i> Back to Orders
+        </a>
+    </div>
+</div>
+<div></div>
+<style>
+        .details-card {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #fff;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+
+        .details-section {
+            margin-bottom: 2rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+            .details-section:last-child {
+                border-bottom: none;
+                margin-bottom: 0;
+                padding-bottom: 0;
+            }
+
+        .section-title {
+            font-weight: 600;
+            color: #343a40;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 0;
+            flex-wrap: wrap;
+        }
+
+            .detail-item.description {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+        .detail-label {
+            font-weight: 500;
+            color: #6c757d;
+            margin-right: 1rem;
+        }
+
+        .detail-value {
+            color: #212529;
+            text-align: right;
+            word-break: break-word;
+        }
+
+        .detail-item.description .detail-value {
+            margin-top: 0.5rem;
+            background-color: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            width: 100%;
+            text-align: left;
+        }
+
+        .map-link {
+            color: #0d6efd;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+            .map-link:hover {
+                text-decoration: underline;
+            }
+
+        /* --- NEW: RESPONSIVE STYLES FOR MOBILE --- */
+        @@media (max-width: 576px) {
+            .details-card {
+                padding: 1.5rem;
+            }
+
+            .detail-item {
+                /* Stack label and value vertically on small screens */
+                flex-direction: column;
+                align-items: flex-start;
+                padding: 0.5rem 0;
+            }
+
+            .detail-label {
+                margin-bottom: 0.25rem;
+                font-size: 0.9rem;
+            }
+
+            .detail-value {
+                text-align: left;
+                font-weight: 500; /* Make the value slightly bolder on mobile */
+            }
+
+            .section-title {
+                font-size: 1.25rem;
+            }
+        }
+    </style>

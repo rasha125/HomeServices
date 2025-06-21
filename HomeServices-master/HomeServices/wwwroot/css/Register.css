@@ -1,0 +1,73 @@
+﻿
+.form-control:focus {
+    background-color: #fff !important;
+    transition: all 0.3s ease;
+}
+
+
+
+.btn-success:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(25, 135, 84, 0.3);
+    transition: all 0.3s ease;
+}
+
+
+
+.btn-primary:hover, .btn-outline-primary:hover {
+    transform: translateY(-1px);
+    transition: all 0.3s ease;
+}
+
+
+
+.card {
+    border-radius: 1rem;
+}
+
+
+
+.form-control {
+    border-radius: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+
+
+.btn {
+    border-radius: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+
+
+.btn-group .btn {
+    border-radius: 0.5rem;
+}
+
+
+
+    .btn-group .btn:first-child {
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+    }
+
+
+
+    .btn-group .btn:last-child {
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+    }
+
+
+
+.form-check-input:checked {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+}
+
+
+
+.form-check-input:focus {
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}

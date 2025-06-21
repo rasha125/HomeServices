@@ -1,0 +1,272 @@
+﻿
+body {
+    font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+}
+
+.hero-section {
+    position: relative;
+    min-height: 80vh;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background-size: cover;
+    background-position: center;
+    background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://images.unsplash.com/photo-1581578731548-c64695cc6952?q=80&w=2070&auto=format&fit=crop');
+}
+
+.section {
+    padding: 80px 0;
+}
+
+.section-title {
+    font-weight: 700;
+    color: #343a40;
+    margin-bottom: 40px;
+    position: relative;
+    padding-bottom: 15px;
+}
+
+    .section-title::after {
+        content: '';
+        position: absolute;
+        display: block;
+        width: 60px;
+        height: 3px;
+        background: #0d6efd;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+
+.feature-card, .service-card {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    text-align: center;
+    padding: 30px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+    .feature-card:hover, .service-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+    }
+
+.feature-icon {
+    font-size: 3rem;
+    color: #0d6efd;
+}
+
+.about-us {
+    background-color: #f8f9fa;
+}
+
+.final-cta-creative {
+    padding: 60px 0 80px 0; /* مسافات أقل */
+    background-color: #1a1a2e; /* نفس لون الخلفية لكن بدون حركة */
+    text-align: center;
+    color: white;
+}
+
+.main-footer {
+    background-color: #12121e; /* لون أغمق قليلاً من القسم الذي فوقه */
+    color: rgba(255, 255, 255, 0.7);
+    padding: 20px 0;
+    text-align: center;
+    font-size: 0.9rem;
+}
+/* --- Styling for Typographic Developer Cards (No Images) --- */
+
+.team-section {
+    background-color: #f8f9fa;
+}
+
+.dev-card-no-img {
+    background-color: #ffffff;
+    border: 1px solid #e9ecef;
+    border-left: 5px solid #0d6efd; /* الشريط الجانبي الملون */
+    border-radius: 8px;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    transition: box-shadow 0.3s ease, border-left-color 0.3s ease;
+}
+
+    .dev-card-no-img:hover {
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+        border-left-color: #0b5ed7; /* لون أغمق عند الـ hover */
+    }
+
+.initials-circle {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    color: #ffffff;
+    font-size: 2rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+}
+
+/* ألوان مختلفة لكل بطاقة */
+.bg-ahmed {
+    background-color: #0d6efd;
+}
+/* Blue */
+.bg-lana {
+    background-color: #6f42c1;
+}
+/* Indigo */
+.bg-mohammad {
+    background-color: #198754;
+}
+/* Green */
+
+.dev-card-no-img .card-title {
+    font-weight: 700;
+}
+
+.dev-card-no-img .card-subtitle {
+    font-weight: 500;
+    color: #6c757d;
+}
+
+.dev-card-no-img .card-text {
+    flex-grow: 1; /* يدفع الفوتر للأسفل */
+    margin-top: 1rem;
+    color: #495057;
+}
+
+.dev-card-no-img .card-footer {
+    background-color: transparent;
+    border: none;
+    padding: 0;
+    margin-top: 1.5rem;
+    text-align: right; /* وضع الأيقونة على اليمين */
+}
+
+.dev-card-no-img .social-icon {
+    font-size: 1.8rem;
+    color: #adb5bd;
+    transition: transform 0.2s ease, color 0.2s ease;
+}
+
+    .dev-card-no-img .social-icon:hover {
+        transform: scale(1.2);
+        color: #0077b5;
+    }
+
+/* --- Styling for Creative Glassmorphism Developer Cards --- */
+
+.team-section-creative {
+    padding: 100px 0;
+    position: relative; /* ضروري لاحتواء الخلفية المتحركة */
+    overflow: hidden; /* لإخفاء أجزاء الخلفية التي تخرج عن الإطار */
+    background-color: #1a1a2e; /* لون خلفية داكن لإبراز تأثير الزجاج */
+}
+
+/* --- الخلفية المتحركة (Aurora Gradient) --- */
+.background-blobs div {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(100px); /* هذا هو سر التأثير الضبابي */
+    opacity: 0.5;
+}
+
+.blob1 {
+    width: 400px;
+    height: 400px;
+    background: rgba(83, 82, 237, 0.5); /* بنفسجي */
+    top: -150px;
+    left: -150px;
+    animation: move 20s infinite alternate;
+}
+
+.blob2 {
+    width: 300px;
+    height: 300px;
+    background: rgba(234, 76, 137, 0.5); /* وردي */
+    bottom: -100px;
+    right: -100px;
+    animation: move 25s infinite alternate;
+}
+
+@@keyframes move {
+    from {
+        transform: translate(0, 0) rotate(0deg);
+    }
+
+    to {
+        transform: translate(100px, 50px) rotate(90deg);
+    }
+}
+
+/* --- بطاقة المطور الزجاجية --- */
+.glass-card {
+    position: relative;
+    background: rgba(255, 255, 255, 0.1); /* شفافية الزجاج */
+    backdrop-filter: blur(15px); /* التأثير الزجاجي المصنفر */
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 15px;
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+    color: white;
+    padding: 2rem;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    transition: transform 0.3s ease;
+}
+
+    .glass-card:hover {
+        transform: scale(1.03);
+    }
+
+.dev-name {
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.dev-title {
+    font-size: 1rem;
+    font-weight: 500;
+    /* تأثير النص المتدرج - لمسة إبداعية */
+    background: linear-gradient(90deg, #c7d2fe, #f9a8d4);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 1rem;
+}
+
+.dev-description {
+    font-weight: 300;
+    opacity: 0.9;
+    flex-grow: 1; /* يدفع الأيقونة للأسفل */
+}
+
+.linkedin-icon {
+    margin-top: 1.5rem;
+    align-self: flex-end; /* وضع الأيقونة في أقصى اليمين */
+}
+
+    .linkedin-icon a {
+        font-size: 1.8rem;
+        color: rgba(255, 255, 255, 0.7);
+        transition: color 0.3s ease, transform 0.3s ease;
+    }
+
+        .linkedin-icon a:hover {
+            color: #ffffff;
+            transform: scale(1.2);
+        }
+
+

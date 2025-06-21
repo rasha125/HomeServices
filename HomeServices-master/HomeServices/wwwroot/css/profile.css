@@ -1,47 +1,96 @@
-﻿body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
+﻿#profileIcon {
+    font-size: var(--profile-img-size);
+    line-height: 1;
 }
 
-.profile-photo {
-    width: 150px;
-    height: 150px;
-    border-radius: 50%;
-    background-color: #d3d3d3;
-    border: 2px solid black;
+:root {
+    --profile-card-bg: #ffffff;
+    --profile-card-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    --profile-img-size: 150px;
+    --input-bg-readonly: #f8f9fa;
+}
+
+.profile-container {
     display: flex;
     justify-content: center;
-    align-items: center;
-    font-weight: bold;
-    color: black;
-    cursor: pointer;
-    overflow: hidden;
-    position: relative;
+    align-items: flex-start;
+    padding: 2rem;
+    min-height: 85vh;
+    background-color: #f4f7f6;
 }
 
-    .profile-photo img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        border-radius: 50%;
-        display: block;
-        align-content
-    }
-
-    .profile-photo input[type="file"] {
-        display: none;
-    }
-
-
-
-.profile-form {
-    min-width: 300px;
-    max-width: 500px;
+.profile-card {
+    background-color: var(--profile-card-bg);
+    border-radius: 15px;
+    box-shadow: var(--profile-card-shadow);
+    padding: 2.5rem;
     width: 100%;
-    padding: 1.5rem;
-    border: 1px solid #dee2e6;
-    border-radius: 0.5rem;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    background-color: #f8f9fa;
+    max-width: 750px;
+}
+
+.profile-photo-container {
+    position: relative;
+    width: var(--profile-img-size);
+    height: var(--profile-img-size);
+    margin: 0 auto;
+}
+
+.profile-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 4px solid #fff;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+.form-control[readonly], .form-control-plaintext {
+    background-color: var(--input-bg-readonly) !important;
+}
+
+.input-group .form-floating {
+    flex: 1 1 auto;
+}
+
+.input-group-text {
+    background-color: #e9ecef;
+    border-right: 0;
+}
+
+.input-group .form-control, .input-group .form-select {
+    border-left: 0;
+}
+
+.btn {
+    transition: all 0.2s ease;
+    border-radius: 20px;
+    font-weight: 500;
+}
+
+    .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+@@media (max-width: 768px) {
+    .profile-container {
+        padding: 1rem;
+    }
+
+    .profile-card {
+        padding: 1.5rem;
+        margin-top: 1rem;
+    }
+
+    :root {
+        --profile-img-size: 120px;
+    }
+
+    #nameDisplay {
+        font-size: 1.5rem;
+    }
+
+    #profileIcon {
+        font-size: 120px;
+    }
 }

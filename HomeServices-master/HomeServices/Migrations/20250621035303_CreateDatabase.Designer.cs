@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HomeServices.Migrations
 {
     [DbContext(typeof(AppDBContext))]
-    [Migration("20250620150222_createdatabase")]
-    partial class createdatabase
+    [Migration("20250621035303_CreateDatabase")]
+    partial class CreateDatabase
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -32,9 +32,6 @@ namespace HomeServices.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IssuesId"));
-
-                    b.Property<string>("AdminNotes")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -128,8 +125,8 @@ namespace HomeServices.Migrations
                     b.Property<DateTime>("OrdersDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("OrdersTime")
-                        .HasColumnType("datetime2");
+                    b.Property<TimeSpan>("OrdersTime")
+                        .HasColumnType("time");
 
                     b.Property<int>("PersonId")
                         .HasColumnType("int");

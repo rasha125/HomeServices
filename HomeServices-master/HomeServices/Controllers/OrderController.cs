@@ -30,19 +30,76 @@ namespace HomeServices.Controllers
             _userManager = userManager;
         }
 
-        public ActionResult Create(Orders collection)
+        [HttpPost]
+        [Authorize(Roles = "Client")]
+        [ValidateAntiForgeryToken]
+        public IActionResult CreateOrder(int ProviderId, int PersonId, string Address, string? MapUrl, string? Description, DateTime OrdersDate, TimeSpan OrdersTime)
         {
-            try
+            if (ProviderId == 0 || PersonId == 0)
             {
-                _rep.Add(collection);
-                return  RedirectToAction("Orders", "Person");
+                return Content("Provider or Person information is missing. Please try again.");
             }
-            catch
+
+            if (string.IsNullOrEmpty(Address))
             {
-                return View();
+                return Content("Address is required.");
             }
+
+            if (OrdersDate.Date < DateTime.UtcNow.Date)
+            {
+                return Content("Order date cannot be in the past.");
+            }
+
+            DateTime newOrderDateTime = OrdersDate.Date + OrdersTime;
+
+            // جلب الحجوزات لنفس المزود ونفس التاريخ والحالة غير ملغية (بدون حساب الفرق هنا)
+            var existingOrders = _context.Orders
+                .Where(o => o.ProviderId == ProviderId
+                            && o.Status != "Cancelled"
+                            && o.OrdersDate == OrdersDate.Date)
+                .AsEnumerable()  // ننتقل إلى المعالجة في الذاكرة
+                .ToList();
+
+            // التحقق من وجود حجز بفارق أقل من 30 دقيقة
+            bool isTimeTaken = existingOrders.Any(o =>
+            {
+                DateTime existingOrderDateTime = o.OrdersDate + o.OrdersTime;
+                return Math.Abs((existingOrderDateTime - newOrderDateTime).TotalMinutes) < 30;
+            });
+
+            if (isTimeTaken)
+            {
+                return BadRequest("Time slot not available.");
+               
+            }
+
+            var order = new Orders
+            {
+                ProviderId = ProviderId,
+                PersonId = PersonId,
+                Address = Address,
+                MapUrl = MapUrl,
+                Description = Description,
+                OrdersDate = OrdersDate.Date,
+                OrdersTime = OrdersTime,
+                Status = "Pending",
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
+            };
+
+            _context.Orders.Add(order);
+            _context.SaveChanges();
+
+            return Ok(new { message = "Booking submitted successfully!" });
         }
-       
+
+
+
+
+
+
+
+
         public IActionResult Index()
         {
             var data = _rep.View().ToList();
@@ -145,22 +202,22 @@ namespace HomeServices.Controllers
         [Authorize(Roles = "Provider")]
         public IActionResult BookingDetails(int id)
         {
-
-
             var order = _context.Orders
-     .Include(o => o.Providers)
-         .ThenInclude(p => p.User)
-     .Include(o => o.Providers)
-         .ThenInclude(p => p.Services)
-     .Include(o => o.Persons)
-         .ThenInclude(p => p.User)
-     .FirstOrDefault(o => o.OrdersId == id);
-
+                .Include(o => o.Providers)
+                    .ThenInclude(p => p.User)
+                .Include(o => o.Providers)
+                    .ThenInclude(p => p.Services)
+                .Include(o => o.Persons)
+                    .ThenInclude(p => p.User)
+                .FirstOrDefault(o => o.OrdersId == id);
 
             if (order == null)
             {
                 return NotFound();
             }
+
+            // جلب التقييم (لو موجود)
+            var rating = _context.Ratings.FirstOrDefault(r => r.OrdersId == id);
 
             var viewModel = new VMCompletedOrder
             {
@@ -173,15 +230,16 @@ namespace HomeServices.Controllers
                 Address = order.Address,
                 MapUrl = order.MapUrl,
                 Description = order.Description,
-                Status = order.Status
+                Status = order.Status,
+                RatingValue = rating?.RatingValue ?? 0, // قيمة التقييم أو 0 إذا لا يوجد
+                RatingComment = rating?.Comment
             };
 
             return View(viewModel);
-
-
         }
 
-        
+
+
 
         [Authorize(Roles = "Provider")] 
         public async Task<IActionResult> CompletedOrders()

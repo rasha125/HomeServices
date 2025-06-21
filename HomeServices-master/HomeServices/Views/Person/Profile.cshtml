@@ -1,89 +1,129 @@
-﻿@model HomeServices.Models.Persons
+﻿@model HomeServices.ViewModels.VMPersonProfile
 
 @{
     ViewData["Title"] = "Profile";
     Layout = "~/Views/_Layout.cshtml";
 }
 
-<div class="container d-flex flex-column justify-content-center align-items-center" style="min-height: 80vh; max-width: 600px;">
-    <form asp-action="EditProfile" method="post" enctype="multipart/form-data" id="profileForm" class="profile-form w-100">
+<div class="profile-container">
+    <div class="profile-card" id="profileCard">
+        <!-- The single, main form that handles everything -->
+        <form asp-action="EditProfile" method="post" enctype="multipart/form-data" id="profileForm">
 
-        <input type="hidden" name="PersonsId" value="@Model.PersonsId" />
+            <input type="hidden" id="ActionType" name="actionType" value="" />
+            <input type="hidden" name="PersonId" value="@Model.PersonId" />
+            <!-- The file input is now part of the main form -->
+            <input type="file" name="ProfileImage" id="imageUploadInput" class="d-none" accept="image/*" />
 
-        <!-- صورة المستخدم -->
-        <div class="mb-3 d-flex justify-content-center">
-            <div class="profile-photo mb-2">
-                @if (!string.IsNullOrEmpty(Model.User.ImagePath))
+            <!-- حاوية صورة المستخدم -->
+            <div class="profile-photo-container mb-3" id="photoContainer">
+                @if (!string.IsNullOrEmpty(Model.ImagePath))
                 {
-                    <img src="~/uploads/@Model.User.ImagePath" alt="Profile Image" class="profile-img rounded-circle" style="max-width:150px; max-height:150px; object-fit:cover;" />
+                    <img id="profileImage" src="~/uploads/@Model.ImagePath" alt="Profile Image" class="profile-img" />
                 }
                 else
                 {
-                    <i class="bi bi-person-circle text-secondary d-flex justify-content-center align-items-center"
-                       style="font-size: 150px; width: 150px; height: 150px; border-radius: 50%; background-color: #f0f0f0;"></i>
+                    <label for="imageUploadInput" style="cursor: default;" id="iconLabel">
+                        <i id="profileIcon" class="bi bi-person-circle text-secondary d-flex justify-content-center align-items-center profile-img"></i>
+                    </label>
                 }
             </div>
-        </div>
 
-        <!-- الاسم -->
-        <h3 class="text-center mb-4 fw-bold">
-            <span id="nameDisplay">@Model.User.FirstName @Model.User.LastName</span>
-        </h3>
+            <!-- أزرار تعديل الصورة -->
+            <div id="imageEditButtons" class="d-flex justify-content-center gap-2 mb-3 d-none">
+                <button type="button" onclick="markDeletePhoto()" class="btn btn-sm btn-danger rounded-pill px-3">
+                    <i class="bi bi-trash me-1"></i> Delete
+                </button>
+                <label class="btn btn-sm btn-secondary rounded-pill px-3 mb-0" for="imageUploadInput">
+                    <i class="bi bi-upload me-1"></i> Change
+                </label>
+            </div>
 
-        <!-- الحقول -->
-        <div class="mb-3 d-flex gap-2">
-            <input type="text" name="User.FirstName" value="@Model.User.FirstName" readonly class="form-control" />
-            <input type="text" name="User.LastName" value="@Model.User.LastName" readonly class="form-control" />
-        </div>
-
-        <div class="mb-3">
-            <label class="form-label">Email</label>
-            <input type="email" value="@Model.User.Email" readonly class="form-control bg-light" />
-        </div>
-
-        <div class="mb-3">
-            <label class="form-label">Phone Number</label>
-            <input type="text" name="User.PhoneNumber" value="@Model.User.PhoneNumber" readonly class="form-control" />
-        </div>
-
-        <div class="mb-3">
-            <label class="form-label">City</label>
-            <input type="text" name="User.City" value="@Model.User.City" readonly class="form-control" />
-        </div>
-
-        <div class="mb-3">
-            <label class="form-label">Country</label>
-            <input type="text" name="User.Country" value="@Model.User.Country" readonly class="form-control" />
-        </div>
-
-        <!-- الأزرار -->
-        <div class="d-flex justify-content-between">
-            <button type="button" id="editBtn" class="btn btn-outline-primary">Edit</button>
-            <button type="submit" id="saveBtn" class="btn btn-success d-none">Save</button>
-        </div>
-    </form>
+            <!-- باقي النموذج -->
+            <h3 class="text-center mb-4 fw-bold" id="nameDisplay">@Model.FirstName @Model.LastName</h3>
+            <div class="row g-3 mb-3 d-none" id="nameFields"><div class="col-md"><div class="form-floating"><input type="text" id="firstNameInput" name="FirstName" value="@Model.FirstName" class="form-control" placeholder="First Name" /><label for="firstNameInput">First Name</label></div></div><div class="col-md"><div class="form-floating"><input type="text" id="lastNameInput" name="LastName" value="@Model.LastName" class="form-control" placeholder="Last Name" /><label for="lastNameInput">Last Name</label></div></div></div>
+            <div class="input-group mb-3"><span class="input-group-text"><i class="bi bi-envelope-fill"></i></span><div class="form-floating"><input type="email" value="@Model.Email" readonly class="form-control-plaintext" id="staticEmail" /><label for="staticEmail">Email</label></div></div>
+            <div class="input-group mb-3"><span class="input-group-text"><i class="bi bi-telephone-fill"></i></span><div class="form-floating"><input type="text" name="PhoneNumber" value="@Model.PhoneNumber" readonly class="form-control" placeholder="Phone Number" /><label>Phone Number</label></div></div>
+            <div class="input-group mb-3"><span class="input-group-text"><i class="bi bi-geo-alt-fill"></i></span><div class="form-floating"><input type="text" name="City" value="@Model.City" readonly class="form-control" placeholder="City" /><label>City</label></div></div>
+            <div class="input-group mb-3"><span class="input-group-text"><i class="bi bi-flag-fill"></i></span><div class="form-floating"><input type="text" name="Country" value="@Model.Country" readonly class="form-control" placeholder="Country" /><label>Country</label></div></div>
+            <div class="d-flex justify-content-end gap-2 mt-4"><button type="button" id="editBtn" class="btn btn-primary px-4">Edit</button><button type="submit" id="saveBtn" class="btn btn-success d-none px-4">Save</button><button type="button" id="cancelBtn" class="btn btn-secondary d-none px-4">Cancel</button></div>
+        </form>
+    </div>
 </div>
 
 @section Scripts {
     <script>
-        document.getElementById("editBtn").addEventListener("click", function () {
-            const form = document.getElementById("profileForm");
-            const inputs = form.querySelectorAll("input");
+        document.addEventListener("DOMContentLoaded", function () {
+            // --- Elements ---
+            const editBtn = document.getElementById("editBtn");
+            const cancelBtn = document.getElementById("cancelBtn");
+            const imageUploadInput = document.getElementById("imageUploadInput");
+            const photoContainer = document.getElementById("photoContainer");
+            const iconLabel = document.getElementById("iconLabel");
+            const imageEditButtons = document.getElementById("imageEditButtons");
 
-            inputs.forEach(input => {
-                if (input.name && input.type !== "hidden" && input.name !== "User.Email") {
-                    input.removeAttribute("readonly");
+            // --- State ---
+            let profileImage = document.getElementById("profileImage");
+
+            // --- Event Listeners ---
+            editBtn.addEventListener("click", function () {
+                document.getElementById("nameDisplay").classList.add("d-none");
+                document.getElementById("nameFields").classList.remove("d-none");
+                document.querySelectorAll("#profileForm input[type='text'], #profileForm textarea").forEach(input => input.readOnly = false);
+                if (profileImage) {
+                    imageEditButtons.classList.remove("d-none");
                 }
+                // Make icon clickable in edit mode
+                if (iconLabel) {
+                    iconLabel.style.cursor = "pointer";
+                }
+                editBtn.classList.add("d-none");
+                document.getElementById("saveBtn").classList.remove("d-none");
+                cancelBtn.classList.remove("d-none");
             });
 
-            document.getElementById("saveBtn").classList.remove("d-none");
-            this.classList.add("d-none");
+            cancelBtn.addEventListener("click", () => window.location.reload());
+
+            // Handle file selection: show preview, show alert, but DON'T submit.
+            imageUploadInput.addEventListener("change", function(event) {
+                const file = event.target.files[0];
+                if (!file) return;
+
+                // Show a preview
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    // If no image exists, create one and replace the icon label.
+                    if (!profileImage) {
+                        const newImg = document.createElement('img');
+                        newImg.id = 'profileImage';
+                        newImg.className = 'profile-img';
+                        newImg.src = e.target.result;
+                        photoContainer.innerHTML = ''; // Clear the container
+                        photoContainer.appendChild(newImg);
+                        profileImage = newImg; // Update reference
+                    } else {
+                        // If an image already exists, just update its src for the preview.
+                        profileImage.src = e.target.result;
+                        profileImage.style.opacity = '1'; // Ensure it's not transparent from a delete action
+                    }
+                }
+                reader.readAsDataURL(file);
+
+                // Optional: Inform the user
+                alert("New photo selected. Click 'Save' to apply the change.");
+            });
         });
+
+        // This function ONLY marks the action as "delete" and shows an alert.
+        function markDeletePhoto() {
+            document.getElementById("ActionType").value = "delete";
+            const profileImg = document.getElementById("profileImage");
+            if (profileImg) {
+                 profileImg.style.opacity = '0.4'; // Visual feedback for deletion
+            }
+            alert("Photo is marked for deletion. Click 'Save' to confirm.");
+        }
     </script>
 
-    <style>
-        .profile-photo img.profile-img {
-            border-radius: 50%;
-        }
-    </style>
+   
 }

@@ -15,10 +15,12 @@
 
     <link rel="stylesheet" href="~/css/profile.css" />
     <link rel="stylesheet" href="~/css/reservation.css" />
-    <link rel="stylesheet" href="~/css/style.css" />
+    <link rel="stylesheet" href="~/css/DashProvider.css" />
     <link rel="stylesheet" href="~/css/Rate.css" />
-     <link rel="stylesheet" href="~/css/cards.css" />
+    <link rel="stylesheet" href="~/css/cards.css" />
     <link rel="stylesheet" href="~/css/Chat.css" />
+    <link rel="stylesheet" href="~/css/custom.css" />
+
 
     @inject Microsoft.AspNetCore.Antiforgery.IAntiforgery antiforgery
     @{
@@ -28,31 +30,37 @@
 
 
     <style>
+        body {
+            overflow-x: hidden; /* يمنع ظهور شريط تمرير أفقي */
+        }
+
         .page-wrapper {
             display: flex;
             height: 100vh;
         }
 
         .sidebar {
-            width: 250px; /* عرض ثابت للشريط الجانبي */
+            width: 250px;
             background-color: #f8f9fa;
             border-right: 1px solid #dee2e6;
             padding: 1rem;
-            flex-shrink: 0; /* يمنع الشريط من الانكماش */
+            flex-shrink: 0;
+            transition: transform 0.3s ease-in-out; /* حركة ناعمة */
+            z-index: 1000;
         }
 
         .main-section {
-            flex-grow: 1; /* يأخذ باقي المساحة المتاحة */
+            flex-grow: 1;
             display: flex;
             flex-direction: column;
-            overflow-y: auto /* يسمح بالتمرير داخل هذا القسم فقط */
+            overflow-y: auto
         }
 
         .top-navbar {
             background-color: #ffffff;
             border-bottom: 1px solid #dee2e6;
             padding: 0.75rem 1.5rem;
-            flex-shrink: 0; /* يمنع الشريط من الانكماش */
+            flex-shrink: 0;
         }
 
         .main-content {
@@ -79,34 +87,67 @@
             font-weight: bold;
             font-size: 1rem;
         }
+
+        /* NEW: Styles for the overlay */
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 999; /* خلف السايدبار */
+            display: none; /* مخفي افتراضياً */
+        }
+
+            .sidebar-overlay.active {
+                display: block; /* يظهر عند الحاجة */
+            }
+
+        /* NEW: Responsive styles for screens smaller than large (tablets and phones) */
+        @@media (max-width: 991.98px) {
+            .sidebar {
+                position: fixed; /* يصبح عائمًا فوق المحتوى */
+                top: 0;
+                left: 0;
+                height: 100vh;
+                transform: translateX(-100%); /* إخفاء الشريط إلى اليسار */
+            }
+
+                .sidebar.show {
+                    transform: translateX(0); /* إظهار الشريط عند إضافة كلاس show */
+                }
+
+            .main-section {
+                width: 100%;
+            }
+        }
     </style>
 </head>
 <body>
 
     <div class="page-wrapper">
         <!-- 1. الشريط الجانبي (Sidebar) -->
-        <aside class="sidebar">
+        <!-- UPDATED: Added an ID for JavaScript to target -->
+        <aside class="sidebar" id="sidebar">
             <h5 class="text-center my-3">My Website</h5>
             <ul class="nav flex-column">
-                @if (User.IsInRole("Admin")){
-               
-                        <li class="nav-item"><a class="nav-link" href="/Admin/Dashboard"><i class="bi bi-speedometer2 me-2"></i> Dashboard</a></li>
-
-                        <li class="nav-item"><a class="nav-link" href="/Person/Index"><i class="bi bi-person-lines-fill me-2"></i>Clients</a></li>
-                        <li class="nav-item"><a class="nav-link" href="/Provider/Index"><i class="bi bi-person-lines-fill me-2"></i>Providers</a></li>
-                        <li class="nav-item"><a class="nav-link" href="/Order/Index"><i class="bi bi-card-list me-2"></i>Orders</a></li>
-                        <li class="nav-item"><a class="nav-link" href="/Service/IndexServices"><i class="bi bi-plus-lg me-2" ></i>Services</a></li>
-                        <li class="nav-item"><a class="nav-link" href="/Issue/Index"><i class="bi bi-book me-2"></i>Report Issue</a></li>
-                    }
+                @if (User.IsInRole("Admin"))
+                {
+                    <li class="nav-item"><a class="nav-link" href="/Admin/Dashboard"><i class="bi bi-speedometer2 me-2"></i> Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/Person/Index"><i class="bi bi-person-lines-fill me-2"></i>Clients</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/Provider/Index"><i class="bi bi-person-lines-fill me-2"></i>Providers</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/Order/Index"><i class="bi bi-card-list me-2"></i>Orders</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/Service/IndexServices"><i class="bi bi-plus-lg me-2"></i>Services</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/Issue/Index"><i class="bi bi-book me-2"></i>Report Issue</a></li>
+                }
                 else if (User.IsInRole("Client"))
                 {
-
+                    <li class="nav-item"><a class="nav-link" href="/Person/dashboard"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a></li>
                     <li class="nav-item"><a class="nav-link" href="/Person/Profile"><i class="bi bi-person-circle me-2"></i> Profile</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/Order/create"><i class="bi bi-plus-lg me-2" ></i> Order Service</a></li>
-
+                    <li class="nav-item"><a class="nav-link" href="/Service/index"><i class="bi bi-plus-lg me-2"></i> Order Service</a></li>
                     <li class="nav-item"><a class="nav-link" href="/Person/Orders"><i class="bi bi-card-list me-2"></i> Orders</a></li>
                     <li class="nav-item"> <a class="nav-link" href="/Person/ListOfProvider"> <i class="bi bi-chat-dots me-2"></i> Messages</a></li>
-
                 }
                 else if (User.IsInRole("Provider"))
                 {
@@ -118,29 +159,38 @@
                 }
             </ul>
         </aside>
+
+        <!-- NEW: Overlay for when the sidebar is open on mobile -->
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
         <!-- Main Section -->
         <div class="main-section">
             <!-- Top Navbar -->
             <nav class="top-navbar d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center">
+                    <!-- NEW: Hamburger menu button, visible only on smaller screens (d-lg-none) -->
+                    <button class="btn d-lg-none me-2" type="button" id="sidebarToggle">
+                        <i class="bi bi-list fs-3"></i>
+                    </button>
+
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        @await Html.PartialAsync("_NavbarUserInfo")
+                    }
+                </div>
+
                 @if (User.Identity.IsAuthenticated)
                 {
                     <div class="d-flex align-items-center">
-                        @await Html.PartialAsync("_NavbarUserInfo")
-                    </div>
-                    <div class="d-flex align-items-center">
                         @if (!User.IsInRole("Admin"))
                         {
-                            <!-- Report Button (Opens Modal) -->
                             <a class="nav-link text-secondary mx-2" href="#" data-bs-toggle="modal" data-bs-target="#issueModal" title="Report an Issue">
                                 <i class="bi bi-flag-fill fs-5"></i>
                             </a>
-
                             @await Html.PartialAsync("_IssueModal", new HomeServices.ViewModels.VMIssue())
                         }
-
-                        <!-- Logout -->
                         <form asp-controller="Users" asp-action="Logout" method="post" class="d-inline">
-                            <button type="submit" class="btn btn-link text-dark p-0">
+                            <button type="submit" class="btn btn-link text-dark p-0 ms-2">
                                 <i class="bi bi-box-arrow-right fs-5"></i>
                             </button>
                         </form>
@@ -148,9 +198,9 @@
                 }
                 else
                 {
-                    <a class="btn btn-primary" href="/Users/Login">Login</a>
+                    <a class="btn btn-primary ms-auto" href="/Users/Login">Login</a>
                 }
-            </nav>
+            </nav>
 
             <main class="main-content">
                 @RenderBody()
@@ -161,6 +211,47 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+    <!-- NEW: JavaScript for toggling the sidebar -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const sidebar = document.getElementById('sidebar');
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+            // Function to open the sidebar
+            function openSidebar() {
+                sidebar.classList.add('show');
+                sidebarOverlay.classList.add('active');
+            }
+
+            // Function to close the sidebar
+            function closeSidebar() {
+                sidebar.classList.remove('show');
+                sidebarOverlay.classList.remove('active');
+            }
+
+            // Event listener for the toggle button
+            if (sidebarToggle) {
+                sidebarToggle.addEventListener('click', function () {
+                    // If sidebar is already shown, close it. Otherwise, open it.
+                    if (sidebar.classList.contains('show')) {
+                        closeSidebar();
+                    } else {
+                        openSidebar();
+                    }
+                });
+            }
+
+            // Event listener for the overlay (to close when clicking outside)
+            if (sidebarOverlay) {
+                sidebarOverlay.addEventListener('click', function () {
+                    closeSidebar();
+                });
+            }
+        });
+    </script>
+
     @RenderSection("Scripts", required: false)
 
 </body>

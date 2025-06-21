@@ -2,36 +2,66 @@
 @model List<Services>
 
 @{
-    ViewData["Title"] = "Services";
+    ViewData["Title"] = "Our Services";
+    Layout = "~/Views/_Layout.cshtml";
 }
 
+<div class="services-page-container">
 
-<input type="text" id="serviceSearch" class="form-control" placeholder="Search services..." />
+    <div class="page-header text-center mb-5">
+        <h1 class="display-5 fw-bold">Explore Our Services</h1>
+        <p class="text-muted">Find the right professional for your home needs.</p>
+    </div>
 
-<div class="row mt-4" id="servicesContainer">
-    @foreach (var service in Model)
-    {
-        <div class="col-md-6 col-lg-4 mb-4 service-card">
-            <div class="card h-100 shadow-sm">
-                <div class="card-body">
-                    <h5 class="card-title service-name">@service.ServiceName</h5>
-                    <p class="card-text">Description</p>  <!--There's No Description data-->
-                    <a asp-controller="Service"
-                       asp-action="Providers"
-                       asp-route-serviceId="@service.ServicesId"
-                       class="btn btn-secondary w-100">
-                        Providers
-                    </a>
+    <div class="search-bar-container mx-auto mb-5">
+        <i class="bi bi-search search-icon"></i>
+        <input type="text" id="serviceSearch" class="form-control" placeholder="Search for services like 'Plumbing', 'Cleaning'..." />
+    </div>
+
+    <div class="row" id="servicesContainer">
+        @if (Model.Any())
+        {
+            @foreach (var service in Model)
+            {
+                <div class="col-md-6 col-lg-4 mb-4 service-card-wrapper">
+                    <div class="service-card card h-100 text-center">
+                        <div class="card-body d-flex flex-column">
+                            <div class="card-icon-wrapper mb-3">
+                                <i class="bi bi-house-gear"></i>
+                            </div>
+
+                            <h5 class="card-title service-name fw-bold">@service.ServiceName</h5>
+
+                            <p class="card-text text-muted small flex-grow-1">
+                                High-quality and reliable services from trusted professionals in your area.
+                            </p>
+
+                            <a asp-controller="Service"
+                               asp-action="Providers"
+                               asp-route-serviceId="@service.ServicesId"
+                               class="btn btn-outline-primary rounded-pill mt-auto">
+                                View Providers
+                            </a>
+                        </div>
+                    </div>
                 </div>
+            }
+        }
+        else
+        {
+            <div class="col-12 text-center">
+                <p>No services found.</p>
             </div>
-        </div>
-    }
+        }
+    </div>
 </div>
+
+
 @section Scripts {
     <script>
-        document.getElementById("serviceSearch").addEventListener("input", function () {
-            const query = this.value.toLowerCase();
-            const cards = document.querySelectorAll(".service-card");
+        document.getElementById("serviceSearch").addEventListener("keyup", function () {
+            const query = this.value.toLowerCase().trim();
+            const cards = document.querySelectorAll(".service-card-wrapper");
 
             cards.forEach(card => {
                 const serviceName = card.querySelector(".service-name").innerText.toLowerCase();

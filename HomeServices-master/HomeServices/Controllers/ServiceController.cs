@@ -1,7 +1,9 @@
 ﻿using HomeServices.Models;
 using HomeServices.Models.Repositorie;
 using HomeServices.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.DotNet.Scaffolding.Shared;
 using Microsoft.EntityFrameworkCore;
@@ -11,18 +13,22 @@ namespace HomeServices.Controllers
     public class ServiceController : Controller
     {
 
-        IRepositorie<Services,int> _rep;
+        IRepositorie<Services, int> _rep;
         IRepositorie<Providers, int> _providerRep;
         IRepositorie<Ratings, int> _ratingRep;
+        private readonly UserManager<Users> _userManager;
+        private readonly AppDBContext _context;
 
 
-        public ServiceController(IRepositorie<Services, int> rep, IRepositorie<Providers, int> providerRep , IRepositorie<Ratings, int> ratingRep)
+        public ServiceController(IRepositorie<Services, int> rep, IRepositorie<Providers, int> providerRep, 
+            IRepositorie<Ratings, int> ratingRep, UserManager<Users> userManager, AppDBContext context)
 
         {
             _rep = rep;
             _providerRep = providerRep;
             _ratingRep = ratingRep;
-
+            _userManager = userManager;
+            _context = context;
         }
 
         public ActionResult Create(Services collection)
@@ -51,7 +57,7 @@ namespace HomeServices.Controllers
         {
             try
             {
-                _rep.Update(id , collection);
+                _rep.Update(id, collection);
                 return RedirectToAction(nameof(IndexServices));
             }
             catch
@@ -92,7 +98,7 @@ namespace HomeServices.Controllers
         {
             try
             {
-                _rep.Delete(id , collection);
+                _rep.Delete(id, collection);
                 return RedirectToAction(nameof(Index));
             }
             catch
@@ -108,19 +114,38 @@ namespace HomeServices.Controllers
             return View(data);
         }
 
+        [Authorize(Roles = "Client")]
         public ActionResult Index()
         {
             var services = _rep.View().ToList();
             return View(services);
         }
+
+        [Authorize(Roles = "Admin")]
         public ActionResult IndexServices()
         {
             var services = _rep.View().ToList();
             return View(services);
         }
 
+   
+        [Authorize(Roles = "Client")]
         public ActionResult Providers(int serviceId)
         {
+            var userId = _userManager.GetUserId(User);
+
+            if (userId == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var person = _context.Persons.FirstOrDefault(p => p.UserId == userId);
+
+            if (person == null)
+            {
+                return BadRequest("Person not found for this user.");
+            }
+
             var service = _rep.Find(serviceId);
             if (service == null)
                 return NotFound();
@@ -136,7 +161,7 @@ namespace HomeServices.Controllers
                 Provider = p,
                 AverageRating = ratings
                     .Where(r => r.Orders.Providers.ProvidersId == p.ProvidersId)
-                    .Select(r => r.RatingValue)  
+                    .Select(r => r.RatingValue)
                     .DefaultIfEmpty(0)
                     .Average()
             }).ToList();
@@ -144,12 +169,14 @@ namespace HomeServices.Controllers
             var model = new ServiceProvidersViewModel
             {
                 ServiceName = service.ServiceName,
-                ProvidersWithRatings = providersWithRatings
+                ProvidersWithRatings = providersWithRatings,
+                PersonId = person.PersonsId
             };
 
             return View(model);
-          
         }
+
+
 
     }
 }

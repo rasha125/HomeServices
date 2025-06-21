@@ -9,13 +9,14 @@ namespace HomeServices.Models
         [Required]
         public string Address { get; set; }
 
+        [Url]
         public string? MapUrl { get; set; }
 
         [Required]
         public DateTime OrdersDate { get; set; }
 
         [Required]
-        public DateTime OrdersTime { get; set; }
+        public TimeSpan OrdersTime { get; set; }
 
         public string Status { get; set; }
 

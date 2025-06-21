@@ -205,7 +205,7 @@ namespace HomeServices.Controllers
             var provider = _context.Providers.FirstOrDefault(p => p.UserId == user.Id);
             if (provider == null) return NotFound();
 
-            // 🔄 حذف الصورة
+            
             if (actionType == "delete")
             {
                 if (!string.IsNullOrEmpty(user.ImagePath))
@@ -219,7 +219,7 @@ namespace HomeServices.Controllers
                 }
             }
 
-            // 🔄 تغيير الصورة أو رفع جديدة (حتى لو actionType مش محدد)
+
             if ((actionType == "change" || string.IsNullOrEmpty(actionType)) && ProfileImage != null && ProfileImage.Length > 0)
             {
                 var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");

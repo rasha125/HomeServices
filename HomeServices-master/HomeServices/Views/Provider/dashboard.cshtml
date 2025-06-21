@@ -1,77 +1,92 @@
 ﻿@model HomeServices.ViewModels.VMProviderDashboard
 
 @{
-    ViewData["Title"] = "Home";
+    ViewData["Title"] = "Dashboard";
     Layout = "~/Views/_Layout.cshtml";
 }
 
-
-<div class="container mt-4">
-    <h3><i class="fi fi-rr-chart-histogram"></i> Orders Summary</h3>
-    <div class="d-flex gap-4 mt-3">
-        <div class="p-3 border rounded text-center" style="flex: 1;">
-            <h5><i class="fi fi-rr-list-check"></i> Total Orders</h5>
-            <p style="font-size: 2rem; font-weight: bold;">@Model.TotalCount</p>
-        </div>
-        <div class="p-3 border rounded text-center" style="flex: 1;">
-            <h5><i class="fi fi-rr-hourglass-start"></i> Pending </h5>
-            <p style="font-size: 2rem; font-weight: bold;">@Model.PendingCount</p>
-        </div>
-        <div class="p-3 border rounded text-center" style="flex: 1;">
-            <h5><i class="fi fi-rr-clipboard-check"></i> Completed </h5>
-            <p style="font-size: 2rem; font-weight: bold;">@Model.CompletedCount</p>
-        </div>
+<div class="page-container">
+    <!-- Header -->
+    <div class="page-header text-center">
+        <h1 class="display-5 fw-bold">Provider Dashboard</h1>
+        <p class="text-muted">An overview of your orders and performance.</p>
     </div>
-</div>
 
-<h3 class="mt-5"><i class="fi fi-rr-clock-three"></i> Monthly Orders</h3>
+    <!-- Summary Cards -->
+    <div class="row g-4 mb-5">
+        <div class="col-lg-4 col-md-6"><div class="summary-card total-orders"><div class="card-icon"><i class="bi bi-box-seam"></i></div><div class="card-content"><p class="card-title">Total Orders</p><p class="card-value">@Model.TotalCount</p></div></div></div>
+        <div class="col-lg-4 col-md-6"><div class="summary-card pending-orders"><div class="card-icon"><i class="bi bi-hourglass-split"></i></div><div class="card-content"><p class="card-title">Pending</p><p class="card-value">@Model.PendingCount</p></div></div></div>
+        <div class="col-lg-4 col-md-12"><div class="summary-card completed-orders"><div class="card-icon"><i class="bi bi-patch-check"></i></div><div class="card-content"><p class="card-title">Completed</p><p class="card-value">@Model.CompletedCount</p></div></div></div>
+    </div>
 
-@if (ViewBag.RecentOrders is List<HomeServices.Models.Orders> recent && recent.Count > 0)
-{
-    <div class="row row-cols-1 row-cols-md-3 g-3 justify-content-center">
-        @foreach (var order in ViewBag.RecentOrders as List<HomeServices.Models.Orders>)
-        {
-            <div class="col">
-                <div class="card @(order.Status == "Cancelled" ? "border-danger" : "")" style="width: 18rem;">
-                    <div class="card-details">
-                        <p class="text-title">
-                            @(order.Persons?.User != null
-                                ? order.Persons.User.FirstName + " " + order.Persons.User.LastName
-                                : "Unknown Client")
-                        </p>
-                        <p class="text-body">
-                            <strong><i class="fi fi-rr-marker"></i> Location:</strong> @order.Address <br />
-                            <strong><i class="fi fi-rr-calendar"></i> Date:</strong> @order.OrdersDate.ToString("yyyy-MM-dd") <br />
-                            <strong><i class="fi fi-rr-info"></i> Status:</strong>
-                            @(string.IsNullOrEmpty(order.Status) ? "Pending" : order.Status)
-                        </p>
+    <!-- Recent Orders Section -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="m-0">Recent Orders</h3>
+        <a asp-controller="Order" asp-action="Reservation" class="btn btn-outline-primary btn-sm rounded-pill">View All</a>
+    </div>
+
+    @if (ViewBag.RecentOrders is List<HomeServices.Models.Orders> recent && recent.Count > 0)
+    {
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            @foreach (var order in ViewBag.RecentOrders as List<HomeServices.Models.Orders>)
+            {
+                var client = order.Persons?.User;
+                var status = string.IsNullOrEmpty(order.Status) ? "Pending" : order.Status;
+                var statusClass = status.ToLower();
+
+                <div class="col">
+                    <div class="order-card-v3 h-100">
+                        <!-- Status Badge -->
+                        <div class="order-status-badge @statusClass">@status</div>
+
+                        <!-- Card Header with Client Info -->
+                        <div class="card-header-v3">
+                            @if (client != null && !string.IsNullOrEmpty(client.ImagePath))
+                            {
+                                <img src="~/uploads/@client.ImagePath" alt="Client" class="client-avatar" />
+                            }
+                            else
+                            {
+                                <div class="client-initials">@client?.FirstName?.ToUpper().FirstOrDefault()</div>
+                            }
+                            <div class="client-info">
+                                <p class="client-name">@client?.FirstName @client?.LastName</p>
+                                <p class="order-id">Order #@order.OrdersId</p>
+                            </div>
+                        </div>
+
+                        <!-- Card Body with Details -->
+                        <div class="card-body-v3">
+                            <div class="order-detail-item">
+                                <i class="bi bi-geo-alt"></i>
+                                <span>@order.Address</span>
+                            </div>
+                            <div class="order-detail-item">
+                                <i class="bi bi-calendar-event"></i>
+                                <span>@order.OrdersDate.ToString("dd MMM, yyyy")</span>
+                            </div>
+                        </div>
+
+                        <!-- The Action Footer that appears on hover -->
+                        <div class="card-footer-v3">
+                            @if (status == "Cancelled")
+                            {
+                                <span class="text-danger fw-bold"><i class="bi bi-x-circle-fill me-1"></i> Cancelled</span>
+                            }
+                            else
+                            {
+                                <a href="@Url.Action("BookingDetails", "Order", new { id = order.OrdersId })" class="btn-view-details">
+                                    View Details <i class="bi bi-arrow-right-short"></i>
+                                </a>
+                            }
+                        </div>
                     </div>
-
-                    @if (order.Status == "Cancelled")
-                    {
-                        <button class="card-button cancelled-button" disabled>Cancelled</button>
-                    }
-                    else
-                    {
-                        <button onclick="window.location.href='@Url.Action("BookingDetails", "Order", new { id = order.OrdersId })'" class="card-button">
-                            More Info
-                        </button>
-                    }
-
-
                 </div>
-            </div>
-
-
-        }
-    </div>
-
-
-
-
-}
-else
-{
-    <p>No recent orders available.</p>
-}
-
+            }
+        </div>
+    }
+    else
+    {
+        <div class="text-center p-5 bg-light rounded-3"><h4>No recent orders to display.</h4></div>
+    }
+</div>

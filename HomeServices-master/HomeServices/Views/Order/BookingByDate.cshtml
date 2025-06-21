@@ -14,7 +14,7 @@
 
         @foreach (var order in Model)
         {
-            var time = order.OrdersTime.ToString("hh:mm tt");
+            var time = order.OrdersTime.ToString(@"hh\:mm");
             var client = order.Persons?.User?.FirstName ?? "Unknown";
             var service = order.Providers?.Services?.ServiceName ?? "Service";
             var location = order.Address;

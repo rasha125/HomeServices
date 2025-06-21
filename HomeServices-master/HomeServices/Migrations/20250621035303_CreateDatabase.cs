@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace HomeServices.Migrations
 {
     /// <inheritdoc />
-    public partial class createdatabase : Migration
+    public partial class CreateDatabase : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -193,7 +193,6 @@ namespace HomeServices.Migrations
                     File = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
-                    AdminNotes = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
@@ -300,7 +299,7 @@ namespace HomeServices.Migrations
                     Address = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     MapUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     OrdersDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    OrdersTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    OrdersTime = table.Column<TimeSpan>(type: "time", nullable: false),
                     Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ProviderId = table.Column<int>(type: "int", nullable: false),

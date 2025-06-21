@@ -1,34 +1,91 @@
 ﻿using HomeServices.Models;
 using HomeServices.Models.Repositorie;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace HomeServices.Controllers
 {
     public class RatingController : Controller
     {
 
-        IRepositorie<Ratings,int> _rep;
+        IRepositorie<Ratings, int> _rep;
+        private readonly AppDBContext _context;
 
 
 
-        public RatingController(IRepositorie<Ratings, int> rep)
+        public RatingController(IRepositorie<Ratings, int> rep, AppDBContext context)
 
         {
             _rep = rep;
+            _context = context;
         }
 
-        public ActionResult Create(Ratings collection)
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Client")]
+        public IActionResult Create(Ratings rating)
         {
             try
             {
-                _rep.Add(collection);
-                return RedirectToAction("Orders","Person");
+                // عبي تاريخ الإنشاء والتحديث
+                rating.CreatedAt = DateTime.UtcNow;
+                rating.UpdatedAt = DateTime.UtcNow;
+
+                // تأكد أن قيم OrdersId و PersonsId موجودة في rating من الفورم
+
+                if (rating.OrdersId == 0 || rating.PersonsId == 0)
+                {
+                    ModelState.AddModelError("", "Order or Person information is missing.");
+                    return View("Error"); // أو معالجة مناسبة
+                }
+
+                // أضف التقييم إلى الريبو
+                _rep.Add(rating);
+
+                // إعادة توجيه مثلاً إلى صفحة الطلبات أو أي مكان آخر
+                return RedirectToAction("Orders", "Person");
             }
-            catch
+            catch (Exception ex)
             {
-                return View();
+                // في حال حدوث خطأ
+                ModelState.AddModelError("", "Failed to save rating: " + ex.Message);
+                return View("Error");
             }
+        }
+
+
+        [HttpPost]
+        [Authorize(Roles = "Client")]
+        [ValidateAntiForgeryToken]
+        public IActionResult SubmitRating(int OrdersId, int PersonsId, int RatingValue, string? Comment)
+        {
+            if (OrdersId == 0 || PersonsId == 0)
+            {
+                return BadRequest("User or Order information is missing. Please try again.");
+            }
+            if (RatingValue < 1 || RatingValue > 5)
+            {
+                return BadRequest("Invalid rating value. Please select between 1 and 5 stars.");
+            }
+
+            var rating = new Ratings
+            {
+                OrdersId = OrdersId,
+                PersonsId = PersonsId,
+                RatingValue = RatingValue,
+                Comment = Comment,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
+            };
+
+            _rep.Add(rating);
+
+            // بدلاً من إعادة التوجيه، أرسل استجابة نجاح
+            return Ok("Rating submitted successfully!");
         }
 
         public IActionResult Index()
@@ -48,7 +105,7 @@ namespace HomeServices.Controllers
         {
             try
             {
-                _rep.Update(id , collection);
+                _rep.Update(id, collection);
                 return RedirectToAction(nameof(Index));
             }
             catch
@@ -69,7 +126,7 @@ namespace HomeServices.Controllers
         {
             try
             {
-                _rep.Delete(id , collection);
+                _rep.Delete(id, collection);
                 return RedirectToAction(nameof(Index));
             }
             catch
