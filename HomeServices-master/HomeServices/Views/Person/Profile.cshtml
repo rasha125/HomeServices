@@ -7,15 +7,13 @@
 
 <div class="profile-container">
     <div class="profile-card" id="profileCard">
-        <!-- The single, main form that handles everything -->
         <form asp-action="EditProfile" method="post" enctype="multipart/form-data" id="profileForm">
-
             <input type="hidden" id="ActionType" name="actionType" value="" />
             <input type="hidden" name="PersonId" value="@Model.PersonId" />
-            <!-- The file input is now part of the main form -->
+
+            <!-- ملف رفع الصورة -->
             <input type="file" name="ProfileImage" id="imageUploadInput" class="d-none" accept="image/*" />
 
-            <!-- حاوية صورة المستخدم -->
             <div class="profile-photo-container mb-3" id="photoContainer">
                 @if (!string.IsNullOrEmpty(Model.ImagePath))
                 {
@@ -23,13 +21,12 @@
                 }
                 else
                 {
-                    <label for="imageUploadInput" style="cursor: default;" id="iconLabel">
+                    <label for="imageUploadInput" style="cursor: pointer;" id="iconLabel">
                         <i id="profileIcon" class="bi bi-person-circle text-secondary d-flex justify-content-center align-items-center profile-img"></i>
                     </label>
                 }
             </div>
 
-            <!-- أزرار تعديل الصورة -->
             <div id="imageEditButtons" class="d-flex justify-content-center gap-2 mb-3 d-none">
                 <button type="button" onclick="markDeletePhoto()" class="btn btn-sm btn-danger rounded-pill px-3">
                     <i class="bi bi-trash me-1"></i> Delete
@@ -39,91 +36,186 @@
                 </label>
             </div>
 
-            <!-- باقي النموذج -->
             <h3 class="text-center mb-4 fw-bold" id="nameDisplay">@Model.FirstName @Model.LastName</h3>
-            <div class="row g-3 mb-3 d-none" id="nameFields"><div class="col-md"><div class="form-floating"><input type="text" id="firstNameInput" name="FirstName" value="@Model.FirstName" class="form-control" placeholder="First Name" /><label for="firstNameInput">First Name</label></div></div><div class="col-md"><div class="form-floating"><input type="text" id="lastNameInput" name="LastName" value="@Model.LastName" class="form-control" placeholder="Last Name" /><label for="lastNameInput">Last Name</label></div></div></div>
-            <div class="input-group mb-3"><span class="input-group-text"><i class="bi bi-envelope-fill"></i></span><div class="form-floating"><input type="email" value="@Model.Email" readonly class="form-control-plaintext" id="staticEmail" /><label for="staticEmail">Email</label></div></div>
-            <div class="input-group mb-3"><span class="input-group-text"><i class="bi bi-telephone-fill"></i></span><div class="form-floating"><input type="text" name="PhoneNumber" value="@Model.PhoneNumber" readonly class="form-control" placeholder="Phone Number" /><label>Phone Number</label></div></div>
-            <div class="input-group mb-3"><span class="input-group-text"><i class="bi bi-geo-alt-fill"></i></span><div class="form-floating"><input type="text" name="City" value="@Model.City" readonly class="form-control" placeholder="City" /><label>City</label></div></div>
-            <div class="input-group mb-3"><span class="input-group-text"><i class="bi bi-flag-fill"></i></span><div class="form-floating"><input type="text" name="Country" value="@Model.Country" readonly class="form-control" placeholder="Country" /><label>Country</label></div></div>
-            <div class="d-flex justify-content-end gap-2 mt-4"><button type="button" id="editBtn" class="btn btn-primary px-4">Edit</button><button type="submit" id="saveBtn" class="btn btn-success d-none px-4">Save</button><button type="button" id="cancelBtn" class="btn btn-secondary d-none px-4">Cancel</button></div>
+            <div class="row g-3 mb-3 d-none" id="nameFields">
+                <div class="col-md">
+                    <div class="form-floating">
+                        <input type="text" id="firstNameInput" name="FirstName" value="@Model.FirstName" class="form-control" placeholder="First Name" />
+                        <label for="firstNameInput">First Name</label>
+                    </div>
+                </div>
+                <div class="col-md">
+                    <div class="form-floating">
+                        <input type="text" id="lastNameInput" name="LastName" value="@Model.LastName" class="form-control" placeholder="Last Name" />
+                        <label for="lastNameInput">Last Name</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="input-group mb-3">
+                <span class="input-group-text"><i class="bi bi-envelope-fill"></i></span>
+                <div class="form-floating">
+                    <input type="email" value="@Model.Email" readonly class="form-control-plaintext" id="staticEmail" />
+                    <label for="staticEmail">Email</label>
+                </div>
+            </div>
+
+            <div class="input-group mb-3">
+                <span class="input-group-text"><i class="bi bi-telephone-fill"></i></span>
+                <div class="form-floating">
+                    <input type="text" name="PhoneNumber" value="@Model.PhoneNumber" readonly class="form-control" placeholder="Phone Number" />
+                    <label>Phone Number</label>
+                </div>
+            </div>
+
+            <!-- Country -->
+            <div class="input-group mb-3">
+                <span class="input-group-text"><i class="bi bi-flag-fill"></i></span>
+                <div style="flex: 1 1 auto; position: relative;">
+                    <input type="text" value="@Model.Country" readonly class="form-control" placeholder="Country" id="countryInput" name="" />
+                    <select name="Country" id="countrySelect" class="form-select d-none" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; padding-left: 1rem;">
+                        <option value="">-- Select Country --</option>
+                        <option value="Palestine">Palestine</option>
+                        <option value="Jordan">Jordan</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- City -->
+            <div class="input-group mb-3">
+                <span class="input-group-text"><i class="bi bi-geo-alt-fill"></i></span>
+                <div style="flex: 1 1 auto; position: relative;">
+                    <input type="text" value="@Model.City" readonly class="form-control" placeholder="City" id="cityInput" name="" />
+                    <select name="City" id="citySelect" class="form-select d-none" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; padding-left: 1rem;">
+                        <option value="">-- Select City --</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-end gap-2 mt-4">
+                <button type="button" id="editBtn" class="btn btn-primary px-4">Edit</button>
+                <button type="submit" id="saveBtn" class="btn btn-success d-none px-4">Save</button>
+                <button type="button" id="cancelBtn" class="btn btn-secondary d-none px-4">Cancel</button>
+            </div>
         </form>
     </div>
 </div>
 
 @section Scripts {
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            // --- Elements ---
-            const editBtn = document.getElementById("editBtn");
-            const cancelBtn = document.getElementById("cancelBtn");
-            const imageUploadInput = document.getElementById("imageUploadInput");
-            const photoContainer = document.getElementById("photoContainer");
-            const iconLabel = document.getElementById("iconLabel");
-            const imageEditButtons = document.getElementById("imageEditButtons");
+        const editBtn = document.getElementById('editBtn');
+        const saveBtn = document.getElementById('saveBtn');
+        const cancelBtn = document.getElementById('cancelBtn');
+        const nameDisplay = document.getElementById('nameDisplay');
+        const nameFields = document.getElementById('nameFields');
+        const form = document.getElementById('profileForm');
 
-            // --- State ---
-            let profileImage = document.getElementById("profileImage");
+        const countryInput = document.getElementById('countryInput');
+        const countrySelect = document.getElementById('countrySelect');
+        const cityInput = document.getElementById('cityInput');
+        const citySelect = document.getElementById('citySelect');
 
-            // --- Event Listeners ---
-            editBtn.addEventListener("click", function () {
-                document.getElementById("nameDisplay").classList.add("d-none");
-                document.getElementById("nameFields").classList.remove("d-none");
-                document.querySelectorAll("#profileForm input[type='text'], #profileForm textarea").forEach(input => input.readOnly = false);
-                if (profileImage) {
-                    imageEditButtons.classList.remove("d-none");
-                }
-                // Make icon clickable in edit mode
-                if (iconLabel) {
-                    iconLabel.style.cursor = "pointer";
-                }
-                editBtn.classList.add("d-none");
-                document.getElementById("saveBtn").classList.remove("d-none");
-                cancelBtn.classList.remove("d-none");
+        const palestineCities = [
+            "Ramallah and Al-Bireh", "Nablus", "Hebron", "Tulkarm", "Jenin",
+            "Qalqilya", "Bethlehem", "Jericho", "Salfit", "Tubas",
+            "Gaza", "Khan Younis", "Rafah", "Deir al-Balah", "North Gaza"
+        ];
+
+        const jordanCities = [
+            "Amman", "Zarqa", "Irbid", "Balqa", "Mafraq",
+            "Karak", "Ma'an", "Tafilah", "Jerash", "Ajloun",
+            "Aqaba", "Madaba"
+        ];
+
+        editBtn.addEventListener('click', function () {
+            nameDisplay.classList.add('d-none');
+            nameFields.classList.remove('d-none');
+
+            const inputs = form.querySelectorAll("input[type='text'], textarea");
+            inputs.forEach(function (input) {
+                input.removeAttribute('readonly');
             });
 
-            cancelBtn.addEventListener("click", () => window.location.reload());
+            countryInput.classList.add('d-none');
+            countrySelect.classList.remove('d-none');
 
-            // Handle file selection: show preview, show alert, but DON'T submit.
-            imageUploadInput.addEventListener("change", function(event) {
-                const file = event.target.files[0];
-                if (!file) return;
+            countrySelect.value = countryInput.value;
+            countrySelect.dispatchEvent(new Event('change')); // populate cities
 
-                // Show a preview
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    // If no image exists, create one and replace the icon label.
-                    if (!profileImage) {
-                        const newImg = document.createElement('img');
-                        newImg.id = 'profileImage';
-                        newImg.className = 'profile-img';
-                        newImg.src = e.target.result;
-                        photoContainer.innerHTML = ''; // Clear the container
-                        photoContainer.appendChild(newImg);
-                        profileImage = newImg; // Update reference
-                    } else {
-                        // If an image already exists, just update its src for the preview.
-                        profileImage.src = e.target.result;
-                        profileImage.style.opacity = '1'; // Ensure it's not transparent from a delete action
-                    }
-                }
-                reader.readAsDataURL(file);
+            cityInput.classList.add('d-none');
+            citySelect.classList.remove('d-none');
 
-                // Optional: Inform the user
-                alert("New photo selected. Click 'Save' to apply the change.");
-            });
+            citySelect.value = cityInput.value;
+
+            if(document.getElementById('imageEditButtons')) {
+                document.getElementById('imageEditButtons').classList.remove('d-none');
+            }
+
+            editBtn.classList.add('d-none');
+            saveBtn.classList.remove('d-none');
+            cancelBtn.classList.remove('d-none');
         });
 
-        // This function ONLY marks the action as "delete" and shows an alert.
+        cancelBtn.addEventListener('click', function () {
+            window.location.reload();
+        });
+
+        countrySelect.addEventListener('change', function () {
+            const country = this.value;
+            citySelect.innerHTML = '<option value="">-- Select City --</option>';
+
+            let cities = [];
+            if (country === 'Palestine') {
+                cities = palestineCities;
+            } else if (country === 'Jordan') {
+                cities = jordanCities;
+            }
+
+            cities.forEach(city => {
+                const option = document.createElement('option');
+                option.value = city;
+                option.text = city;
+                citySelect.appendChild(option);
+            });
+
+            if (!cities.includes(citySelect.value)) {
+                citySelect.value = "";
+            }
+        });
+
+        const imageUploadInput = document.getElementById('imageUploadInput');
+        const profileImage = document.getElementById('profileImage');
+        const iconLabel = document.getElementById('iconLabel');
+
+        imageUploadInput.addEventListener('change', function () {
+            if (this.files && this.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    if (profileImage) {
+                        profileImage.src = e.target.result;
+                    } else if(iconLabel) {
+                        const img = document.createElement('img');
+                        img.id = 'profileImage';
+                        img.src = e.target.result;
+                        img.className = 'profile-img';
+                        iconLabel.replaceWith(img);
+                    }
+                };
+                reader.readAsDataURL(this.files[0]);
+                alert("New photo selected. Click 'Save' to apply the change.");
+            }
+        });
+
         function markDeletePhoto() {
             document.getElementById("ActionType").value = "delete";
-            const profileImg = document.getElementById("profileImage");
-            if (profileImg) {
-                 profileImg.style.opacity = '0.4'; // Visual feedback for deletion
+            alert("Photo will be deleted upon saving.");
+        }
+
+        function markChangePhoto(input) {
+            if (input.files && input.files.length > 0) {
+                document.getElementById("ActionType").value = "change";
+                alert("New photo selected. It will be uploaded upon saving.");
             }
-            alert("Photo is marked for deletion. Click 'Save' to confirm.");
         }
     </script>
-
-   
 }

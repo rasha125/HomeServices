@@ -33,7 +33,8 @@ namespace HomeServices.Controllers
         [HttpPost]
         [Authorize(Roles = "Client")]
         [ValidateAntiForgeryToken]
-        public IActionResult CreateOrder(int ProviderId, int PersonId, string Address, string? MapUrl, string? Description, DateTime OrdersDate, TimeSpan OrdersTime)
+        public IActionResult CreateOrder(int ProviderId, int PersonId, int ServiceId, string Address, string? MapUrl, string? Description, DateTime OrdersDate, TimeSpan OrdersTime)
+
         {
             if (ProviderId == 0 || PersonId == 0)
             {
@@ -52,15 +53,13 @@ namespace HomeServices.Controllers
 
             DateTime newOrderDateTime = OrdersDate.Date + OrdersTime;
 
-            // جلب الحجوزات لنفس المزود ونفس التاريخ والحالة غير ملغية (بدون حساب الفرق هنا)
             var existingOrders = _context.Orders
                 .Where(o => o.ProviderId == ProviderId
                             && o.Status != "Cancelled"
                             && o.OrdersDate == OrdersDate.Date)
-                .AsEnumerable()  // ننتقل إلى المعالجة في الذاكرة
+                .AsEnumerable()
                 .ToList();
 
-            // التحقق من وجود حجز بفارق أقل من 30 دقيقة
             bool isTimeTaken = existingOrders.Any(o =>
             {
                 DateTime existingOrderDateTime = o.OrdersDate + o.OrdersTime;
@@ -70,7 +69,6 @@ namespace HomeServices.Controllers
             if (isTimeTaken)
             {
                 return BadRequest("Time slot not available.");
-               
             }
 
             var order = new Orders
@@ -90,8 +88,10 @@ namespace HomeServices.Controllers
             _context.Orders.Add(order);
             _context.SaveChanges();
 
-            return Ok(new { message = "Booking submitted successfully!" });
+            return RedirectToAction("Providers", "Service", new { serviceId = ServiceId });
+
         }
+
 
 
 

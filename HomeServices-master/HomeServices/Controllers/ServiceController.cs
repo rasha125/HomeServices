@@ -169,6 +169,7 @@ namespace HomeServices.Controllers
             var model = new ServiceProvidersViewModel
             {
                 ServiceName = service.ServiceName,
+                ServiceId = service.ServicesId, 
                 ProvidersWithRatings = providersWithRatings,
                 PersonId = person.PersonsId
             };

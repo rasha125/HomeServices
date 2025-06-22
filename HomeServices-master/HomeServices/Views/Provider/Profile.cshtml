@@ -12,6 +12,10 @@
 
             <input type="hidden" id="ActionType" name="actionType" value="" />
 
+            <!-- حقول مخفية ترسل قيم المدينة والدولة -->
+            <input type="hidden" name="City" id="hiddenCity" value="@Model.City" />
+            <input type="hidden" name="Country" id="hiddenCountry" value="@Model.Country" />
+
             <div class="mb-3 d-flex flex-column align-items-center">
                 @if (!string.IsNullOrEmpty(Model.ImagePath))
                 {
@@ -52,19 +56,27 @@
                 </div>
             </div>
 
+            <!-- Country -->
             <div class="input-group mb-3">
-                <span class="input-group-text"><i class="bi bi-geo-alt-fill"></i></span>
-                <div class="form-floating">
-                    <input type="text" name="City" value="@Model.City" readonly class="form-control" placeholder="City" />
-                    <label>City</label>
+                <span class="input-group-text"><i class="bi bi-flag-fill"></i></span>
+                <div style="flex: 1 1 auto; position: relative;">
+                    <input type="text" id="countryInput" value="@Model.Country" readonly class="form-control" placeholder="Country" />
+                    <select name="Country" id="countrySelect" class="form-select d-none" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; padding-left: 1rem;">
+                        <option value="">-- Select Country --</option>
+                        <option value="Palestine">Palestine</option>
+                        <option value="Jordan">Jordan</option>
+                    </select>
                 </div>
             </div>
 
+            <!-- City -->
             <div class="input-group mb-3">
-                <span class="input-group-text"><i class="bi bi-flag-fill"></i></span>
-                <div class="form-floating">
-                    <input type="text" name="Country" value="@Model.Country" readonly class="form-control" placeholder="Country" />
-                    <label>Country</label>
+                <span class="input-group-text"><i class="bi bi-geo-alt-fill"></i></span>
+                <div style="flex: 1 1 auto; position: relative;">
+                    <input type="text" id="cityInput" value="@Model.City" readonly class="form-control" placeholder="City" />
+                    <select name="City" id="citySelect" class="form-select d-none" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; padding-left: 1rem;">
+                        <option value="">-- Select City --</option>
+                    </select>
                 </div>
             </div>
 
@@ -87,7 +99,7 @@
             <div class="input-group mb-3">
                 <span class="input-group-text"><i class="bi bi-check-circle-fill"></i></span>
                 <div class="form-floating">
-                    <select name="ProviderStatus" class="form-select" disabled>
+                    <select name="ProviderStatus" class="form-control" disabled>
                         <option value="Available" selected="@(Model.ProviderStatus == "Available")">Available</option>
                         <option value="Inactive" selected="@(Model.ProviderStatus == "Inactive")">Unavailable</option>
                         <option value="OnVacation" selected="@(Model.ProviderStatus == "OnVacation")">On Vacation</option>
@@ -106,62 +118,136 @@
 </div>
 
 @section Scripts {
-    <script>
-        const editBtn = document.getElementById('editBtn');
-        const saveBtn = document.getElementById('saveBtn');
-        const cancelBtn = document.getElementById('cancelBtn');
-        const nameDisplay = document.getElementById('nameDisplay');
-        const firstNameInput = document.getElementById('FirstNameInput');
-        const lastNameInput = document.getElementById('LastNameInput');
-        const imageButtons = document.getElementById('imageButtons');
-        const form = document.getElementById('profileForm');
+<script>
+    const editBtn = document.getElementById('editBtn');
+    const saveBtn = document.getElementById('saveBtn');
+    const cancelBtn = document.getElementById('cancelBtn');
 
-        editBtn.addEventListener('click', function () {
-            nameDisplay.style.display = 'none';
-            firstNameInput.style.display = 'inline-block';
-            lastNameInput.style.display = 'inline-block';
+    const nameDisplay = document.getElementById('nameDisplay');
+    const firstNameInput = document.getElementById('FirstNameInput');
+    const lastNameInput = document.getElementById('LastNameInput');
 
-            const inputs = form.querySelectorAll("input[type='text'], textarea");
-            inputs.forEach(function (input) {
-                if (input !== firstNameInput && input !== lastNameInput) {
-                    input.removeAttribute('readonly');
-                }
-            });
+    const imageButtons = document.getElementById('imageButtons');
+    const form = document.getElementById('profileForm');
 
-            const selects = form.querySelectorAll('select');
-            selects.forEach(function (select) {
-                select.removeAttribute('disabled');
-            });
+    const countryInput = document.getElementById('countryInput');
+    const countrySelect = document.getElementById('countrySelect');
+    const cityInput = document.getElementById('cityInput');
+    const citySelect = document.getElementById('citySelect');
 
-            if (imageButtons) {
-                imageButtons.classList.remove('d-none');
-                imageButtons.classList.add('d-flex');
+    const hiddenCountry = document.getElementById('hiddenCountry');
+    const hiddenCity = document.getElementById('hiddenCity');
+
+    const palestineCities = [
+        "Ramallah and Al-Bireh", "Nablus", "Hebron", "Tulkarm", "Jenin",
+        "Qalqilya", "Bethlehem", "Jericho", "Salfit", "Tubas",
+        "Gaza", "Khan Younis", "Rafah", "Deir al-Balah", "North Gaza"
+    ];
+
+    const jordanCities = [
+        "Amman", "Zarqa", "Irbid", "Balqa", "Mafraq",
+        "Karak", "Ma'an", "Tafilah", "Jerash", "Ajloun",
+        "Aqaba", "Madaba"
+    ];
+
+    editBtn.addEventListener('click', function () {
+        nameDisplay.style.display = 'none';
+        firstNameInput.style.display = 'inline-block';
+        lastNameInput.style.display = 'inline-block';
+                const form = document.getElementById('profileForm');
+
+        form.addEventListener('submit', function (e) {
+            // إذا select الدولة ظاهر (أي في وضع التحرير)
+            if (!countrySelect.classList.contains('d-none')) {
+                hiddenCountry.value = countrySelect.value;
+            } else {
+                hiddenCountry.value = countryInput.value;
             }
 
-            editBtn.classList.add('d-none');
-            saveBtn.classList.remove('d-none');
-            if (cancelBtn) {
-                cancelBtn.classList.remove('d-none');
+            // إذا select المدينة ظاهر
+            if (!citySelect.classList.contains('d-none')) {
+                hiddenCity.value = citySelect.value;
+            } else {
+                hiddenCity.value = cityInput.value;
+            }
+        });
+        const inputs = form.querySelectorAll("input[type='text'], textarea");
+        inputs.forEach(function (input) {
+            if (input !== firstNameInput && input !== lastNameInput) {
+                input.removeAttribute('readonly');
             }
         });
 
+        const selects = form.querySelectorAll('select');
+        selects.forEach(function (select) {
+            select.removeAttribute('disabled');
+        });
+
+        if (imageButtons) {
+            imageButtons.classList.remove('d-none');
+            imageButtons.classList.add('d-flex');
+        }
+
+        editBtn.classList.add('d-none');
+        saveBtn.classList.remove('d-none');
         if (cancelBtn) {
-            cancelBtn.addEventListener('click', function() {
-                window.location.reload();
-            });
+            cancelBtn.classList.remove('d-none');
         }
 
-        function markDeletePhoto() {
-            document.getElementById("ActionType").value = "delete";
-            alert("Photo will be deleted upon saving.");
+        // تغيير المدينة والدولة من input إلى select
+        countryInput.classList.add('d-none');
+        countrySelect.classList.remove('d-none');
+        countrySelect.value = countryInput.value;
+        countrySelect.dispatchEvent(new Event('change'));
+
+        cityInput.classList.add('d-none');
+        citySelect.classList.remove('d-none');
+        citySelect.value = cityInput.value;
+    });
+
+    cancelBtn.addEventListener('click', function () {
+        window.location.reload();
+    });
+
+    countrySelect.addEventListener('change', function () {
+        let cities = [];
+        const selectedCountry = countrySelect.value;
+
+        if (selectedCountry === "Palestine") {
+            cities = palestineCities;
+        } else if (selectedCountry === "Jordan") {
+            cities = jordanCities;
         }
 
-        function markChangePhoto(input) {
-            if (input.files && input.files.length > 0) {
-                document.getElementById("ActionType").value = "change";
-                alert("New photo selected. It will be uploaded upon saving.");
-            }
-        }
-    </script>
+        citySelect.innerHTML = '<option value="">-- Select City --</option>';
+        cities.forEach(function (city) {
+            const option = document.createElement('option');
+            option.value = city;
+            option.text = city;
+            citySelect.appendChild(option);
+        });
 
+        citySelect.value = "";
+
+        // تحديث القيم المخفية عند تغيير الدولة
+        hiddenCountry.value = selectedCountry;
+        hiddenCity.value = "";
+    });
+
+    citySelect.addEventListener('change', function () {
+        hiddenCity.value = citySelect.value;
+    });
+
+    function markDeletePhoto() {
+        document.getElementById("ActionType").value = "delete";
+        alert("Photo will be deleted upon saving.");
+    }
+
+    function markChangePhoto(input) {
+        if (input.files && input.files.length > 0) {
+            document.getElementById("ActionType").value = "change";
+            alert("New photo selected. It will be uploaded upon saving.");
+        }
+    }
+</script>
 }

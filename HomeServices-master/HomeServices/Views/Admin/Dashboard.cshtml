@@ -1,35 +1,172 @@
-﻿@* 
-@{
+﻿@{
     ViewData["Title"] = "Admin Dashboard";
     Layout = "~/Views/_Layout.cshtml";
-} 
-*@
+}
 
-<div class="container mt-4" style="max-width: 600px;">
-    <h2 class="mb-4 text-center">مرحبًا، Admin</h2>
+<div class="page-container">
 
-    <h3 class="mb-3 text-secondary text-center">System Stats</h3>
+    <!-- Page Header -->
+    <div class="page-header text-center">
+        <h1 class="display-5 fw-bold">Admin Dashboard</h1>
+        <p class="text-muted">Welcome, Admin! Here's a summary of your platform.</p>
+    </div>
 
-    <ul class="list-group shadow-sm">
-        <li class="list-group-item d-flex justify-content-between align-items-center">
-            <span>Total Users</span>
-            <span class="badge bg-primary rounded-pill">@ViewBag.UserCount</span>
-        </li>
-        <li class="list-group-item d-flex justify-content-between align-items-center">
-            <span>Total Persons</span>
-            <span class="badge bg-primary rounded-pill">@ViewBag.PersonCount</span>
-        </li>
-        <li class="list-group-item d-flex justify-content-between align-items-center">
-            <span>Total Providers</span>
-            <span class="badge bg-primary rounded-pill">@ViewBag.ProviderCount</span>
-        </li>
-        <li class="list-group-item d-flex justify-content-between align-items-center">
-            <span>Total Orders</span>
-            <span class="badge bg-primary rounded-pill">@ViewBag.orderCount</span>
-        </li>
-        <li class="list-group-item d-flex justify-content-between align-items-center">
-            <span>Total Issues</span>
-            <span class="badge bg-primary rounded-pill">@ViewBag.issueCount</span>
-        </li>
-    </ul>
+    <!-- Stats Cards Container -->
+    <div class="row g-4">
+        <!-- Total Users Card -->
+        <div class="col-md-6 col-lg-4">
+            <div class="stat-card">
+                <div class="stat-icon icon-users">
+                    <i class="bi bi-people-fill"></i>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-title">Total Users</span>
+                    <span class="stat-value">@ViewBag.UserCount</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Persons (Clients) Card -->
+        <div class="col-md-6 col-lg-4">
+            <div class="stat-card">
+                <div class="stat-icon icon-clients">
+                    <i class="bi bi-person-check-fill"></i>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-title">Clients</span>
+                    <span class="stat-value">@ViewBag.PersonCount</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Providers Card -->
+        <div class="col-md-6 col-lg-4">
+            <div class="stat-card">
+                <div class="stat-icon icon-providers">
+                    <i class="bi bi-person-workspace"></i>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-title">Providers</span>
+                    <span class="stat-value">@ViewBag.ProviderCount</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Orders Card -->
+        <div class="col-md-6 col-lg-4">
+            <div class="stat-card">
+                <div class="stat-icon icon-orders">
+                    <i class="bi bi-box-seam-fill"></i>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-title">Total Orders</span>
+                    <span class="stat-value">@ViewBag.orderCount</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Issues Card -->
+        <div class="col-md-6 col-lg-4">
+            <div class="stat-card">
+                <div class="stat-icon icon-issues">
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-title">Reported Issues</span>
+                    <span class="stat-value">@ViewBag.issueCount</span>
+                </div>
+            </div>
+        </div>
+
+    </div>
 </div>
+
+
+    <style>
+        .stat-card {
+            display: flex;
+            align-items: center;
+            background-color: #ffffff;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.07);
+            border-left: 5px solid; /* Colored border on the left */
+            transition: all 0.3s ease-in-out;
+        }
+
+            .stat-card:hover {
+                transform: translateY(-5px) scale(1.02);
+                box-shadow: 0 12px 35px rgba(0,0,0,0.1);
+            }
+
+            .stat-card .stat-icon {
+                width: 60px;
+                height: 60px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin-right: 1.5rem;
+                font-size: 1.8rem;
+                color: #fff;
+            }
+
+            /* Color-coding for each card */
+            .stat-card:nth-child(1) {
+                border-color: #0d6efd;
+            }
+
+            .stat-card .icon-users {
+                background-color: #0d6efd;
+            }
+
+            .stat-card:nth-child(2) {
+                border-color: #198754;
+            }
+
+            .stat-card .icon-clients {
+                background-color: #198754;
+            }
+
+            .stat-card:nth-child(3) {
+                border-color: #6f42c1;
+            }
+
+            .stat-card .icon-providers {
+                background-color: #6f42c1;
+            }
+
+            .stat-card:nth-child(4) {
+                border-color: #fd7e14;
+            }
+
+            .stat-card .icon-orders {
+                background-color: #fd7e14;
+            }
+
+            .stat-card:nth-child(5) {
+                border-color: #dc3545;
+            }
+
+            .stat-card .icon-issues {
+                background-color: #dc3545;
+            }
+
+
+            .stat-card .stat-info {
+                display: flex;
+                flex-direction: column;
+            }
+
+            .stat-card .stat-title {
+                font-size: 1rem;
+                color: #6c757d;
+                font-weight: 500;
+            }
+
+            .stat-card .stat-value {
+                font-size: 2.2rem;
+                font-weight: 700;
+                color: #212529;
+            }
+    </style>

@@ -6,6 +6,7 @@ namespace HomeServices.ViewModels
     {
         public string ServiceName { get; set; }
 
+        public int ServiceId { get; set; }
         public List<ProviderWithRatingViewModel> ProvidersWithRatings { get; set; }
 
         public int PersonId { get; set; }
