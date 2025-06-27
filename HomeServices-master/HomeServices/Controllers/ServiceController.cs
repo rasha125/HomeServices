@@ -20,7 +20,7 @@ namespace HomeServices.Controllers
         private readonly AppDBContext _context;
 
 
-        public ServiceController(IRepositorie<Services, int> rep, IRepositorie<Providers, int> providerRep, 
+        public ServiceController(IRepositorie<Services, int> rep, IRepositorie<Providers, int> providerRep,
             IRepositorie<Ratings, int> ratingRep, UserManager<Users> userManager, AppDBContext context)
 
         {
@@ -128,8 +128,9 @@ namespace HomeServices.Controllers
             return View(services);
         }
 
-   
+
         [Authorize(Roles = "Client")]
+        
         public ActionResult Providers(int serviceId)
         {
             var userId = _userManager.GetUserId(User);
@@ -150,7 +151,14 @@ namespace HomeServices.Controllers
             if (service == null)
                 return NotFound();
 
-            var providers = _providerRep.View().Where(p => p.ServicesId == serviceId).ToList();
+            var personCountry = _context.Users
+                .Where(u => u.Id == userId)
+                .Select(u => u.Country)
+                .FirstOrDefault();
+
+            var providers = _providerRep.View()
+                .Where(p => p.ServicesId == serviceId && p.User.Country == personCountry)
+                .ToList();
 
             var ratings = _ratingRep.View()
                 .Where(r => r.Orders.Providers.Services.ServicesId == serviceId)
@@ -169,15 +177,12 @@ namespace HomeServices.Controllers
             var model = new ServiceProvidersViewModel
             {
                 ServiceName = service.ServiceName,
-                ServiceId = service.ServicesId, 
+                ServiceId = service.ServicesId,
                 ProvidersWithRatings = providersWithRatings,
                 PersonId = person.PersonsId
             };
 
             return View(model);
         }
-
-
-
     }
-}
+    }

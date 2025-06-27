@@ -4,6 +4,11 @@
     ViewData["Title"] = "Details";
 }
 
+<div>
+    <a asp-action="Index"  class="btn btn-outline-secondary mb-3">
+        <i class="bi bi-arrow-left"></i> Back to List
+    </a>
+</div>
 <h1 class="mb-4">Order Details</h1>
 
 <div class="card shadow-sm mb-4">
@@ -36,7 +41,7 @@
             <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Description)</dt>
             <dd class="col-sm-9">@Html.DisplayFor(model => model.Description)</dd>
 
-            <dt class="col-sm-3">مزود الخدمة</dt>
+            <dt class="col-sm-3">Provider</dt>
             <dd class="col-sm-9">@Model.Providers?.User?.FirstName @Model.Providers?.User?.LastName</dd>
 
             <dt class="col-sm-3">Client</dt>
@@ -54,8 +59,3 @@
     </div>
 </div>
 
-<div>
-    <a asp-action="Index" class="btn btn-secondary">
-        <i class="fas fa-arrow-left me-1"></i> Back To List
-    </a>
-</div>

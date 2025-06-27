@@ -156,11 +156,21 @@ namespace HomeServices.Controllers
                 return View();
             }
 
-            var result = await _signInManager.PasswordSignInAsync(email, password, isPersistent: false, lockoutOnFailure: false);
+            // 🔍 أولاً، نحضر المستخدم بناءً على البريد الإلكتروني
+            var user = await _userManager.FindByEmailAsync(email);
+
+            // ❌ إذا المستخدم محذوف (soft deleted)، نمنعه من تسجيل الدخول
+            if (user == null || user.DeletedAt != null)
+            {
+                ModelState.AddModelError("", "This account has been deactivated or does not exist.");
+                return View();
+            }
+
+            // ✅ إذا المستخدم موجود وغير محذوف، نجرب تسجيل الدخول
+            var result = await _signInManager.PasswordSignInAsync(user.UserName, password, isPersistent: false, lockoutOnFailure: false);
 
             if (result.Succeeded)
             {
-                var user = await _userManager.FindByEmailAsync(email);
                 var role = ((UserRole)user.RoleId).ToString();
 
                 if (role == "Admin")
@@ -174,6 +184,7 @@ namespace HomeServices.Controllers
             ModelState.AddModelError("", "Invalid login attempt.");
             return View();
         }
+
 
         [HttpPost]
         public async Task<IActionResult> Logout()

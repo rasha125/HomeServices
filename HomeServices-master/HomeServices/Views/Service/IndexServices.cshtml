@@ -31,7 +31,6 @@
                             <th>Service Name</th>
                             <th>Created At</th>
                             <th>Updated At</th>
-                            <th>Deleted At</th>
                             <th class="text-center">Actions</th>
                         </tr>
                     </thead>
@@ -44,7 +43,6 @@
                                     <td class="align-middle">@item.ServiceName</td>
                                     <td class="align-middle">@item.CreatedAt</td>
                                     <td class="align-middle">@item.UpdatedAt</td>
-                                    <td class="align-middle">@item.DeletedAt</td>
                                     <td class="text-center align-middle">
                                         <a asp-action="Edit" asp-route-id="@item.ServicesId" class="btn btn-sm btn-outline-primary mx-1" data-bs-toggle="tooltip" title="Edit">
                                             <i class="fas fa-edit"></i>

@@ -19,12 +19,11 @@ namespace HomeServices.Controllers
 
         public IActionResult Dashboard()
         {
-            int userCount = _context.Users.Count();
-            int personCount = _context.Persons.Count();
-            int providerCount = _context.Providers.Count();
-            int orderCount = _context.Orders.Count();
+            int userCount = _context.Users.Count(u => u.DeletedAt == null)-1;
+            int personCount = _context.Persons.Count(p => p.DeletedAt == null);
+            int providerCount = _context.Providers.Count(p => p.DeletedAt == null);
+            int orderCount = _context.Orders.Count(); 
             int issueCount = _context.Issues.Count();
-
 
             ViewBag.UserCount = userCount;
             ViewBag.PersonCount = personCount;
@@ -34,5 +33,6 @@ namespace HomeServices.Controllers
 
             return View();
         }
+
     }
 }

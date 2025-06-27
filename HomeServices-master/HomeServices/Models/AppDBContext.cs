@@ -32,13 +32,13 @@ namespace HomeServices.Models
                 .HasOne(m => m.Sender)
                 .WithMany()
                 .HasForeignKey(m => m.SenderId)
-                .OnDelete(DeleteBehavior.Restrict); // ❗️مهم جداً
+                .OnDelete(DeleteBehavior.Restrict); 
 
             modelBuilder.Entity<Messages>()
                 .HasOne(m => m.Receiver)
                 .WithMany()
                 .HasForeignKey(m => m.ReceiverId)
-                .OnDelete(DeleteBehavior.Restrict); // ❗️كمان
+                .OnDelete(DeleteBehavior.Restrict); 
 
             modelBuilder.Entity<Orders>()
               .HasOne(o => o.Providers)
@@ -52,6 +52,14 @@ namespace HomeServices.Models
                 .HasForeignKey(o => o.PersonId)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            modelBuilder.Entity<Users>()
+        .HasQueryFilter(u => u.DeletedAt == null);
+
+            modelBuilder.Entity<Persons>()
+                .HasQueryFilter(p => p.DeletedAt == null);
+
+            modelBuilder.Entity<Providers>()
+                .HasQueryFilter(p => p.DeletedAt == null);
 
 
 

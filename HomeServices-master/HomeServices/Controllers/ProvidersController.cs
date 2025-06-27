@@ -50,8 +50,13 @@ namespace HomeServices.Controllers
         [Authorize(Roles = "Admin")]
         public IActionResult Index()
         {
-            var data = _rep.View().ToList();
-            return View(data);
+            var providers = _context.Providers
+        .Where(p => p.DeletedAt == null)
+        .Include(p => p.User)
+        .Include(p => p.Services)
+        .ToList();
+
+            return View(providers);
         }
 
         [Authorize(Roles = "Provider")]
@@ -296,7 +301,7 @@ namespace HomeServices.Controllers
             }
         }
         [HttpPost]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
             var provider = _context.Providers.FirstOrDefault(p => p.ProvidersId == id);
 
@@ -305,13 +310,22 @@ namespace HomeServices.Controllers
                 return NotFound();
             }
 
+            var user = await _userManager.FindByIdAsync(provider.UserId);
+
+            if (user != null)
+            {
+                user.DeletedAt = DateTime.Now;
+                await _userManager.UpdateAsync(user);
+            }
+
             provider.DeletedAt = DateTime.Now;
+
             _context.SaveChanges();
 
             return RedirectToAction("Index");
         }
 
-        
+
 
         // GET: ProvidersController/Details/5
         public ActionResult Details(int id)
@@ -349,10 +363,17 @@ namespace HomeServices.Controllers
 
             ViewBag.NewMessagesCount = newMessagesCount;
 
+            var currentUserCountry = _context.Users
+      .Where(u => u.Id == currentUserId)
+      .Select(u => u.Country)
+      .FirstOrDefault();
+            var Persons = _context.Persons
+       .Include(p => p.User)
+       .Where(p => p.User.Country == currentUserCountry)
+       .ToList();
 
 
 
-            var Persons = _context.Persons.Include(p => p.User).ToList();
             return View(Persons);
         }
     }

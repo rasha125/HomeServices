@@ -81,8 +81,12 @@ namespace HomeServices.Controllers
         [Authorize(Roles = "Admin")]
         public IActionResult Index()
         {
-            var data = _rep.View().ToList();
-            return View(data);
+            var persons = _context.Persons
+       .Where(p => p.DeletedAt == null)
+       .Include(p => p.User)
+       .ToList();
+
+            return View(persons);
         }
 
 
@@ -109,16 +113,26 @@ namespace HomeServices.Controllers
         }
 
         [HttpPost]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            var provider = _context.Persons.FirstOrDefault(p => p.PersonsId == id);
+            var person = _context.Persons.FirstOrDefault(p => p.PersonsId == id);
 
-            if (provider == null)
+            if (person == null)
             {
                 return NotFound();
             }
 
-            provider.DeletedAt = DateTime.Now;
+            var user = await _userManager.FindByIdAsync(person.UserId); 
+
+            if (user != null)
+            {
+                user.DeletedAt = DateTime.Now;
+                await _userManager.UpdateAsync(user);
+
+            }
+
+            person.DeletedAt = DateTime.Now;
+
             _context.SaveChanges();
 
             return RedirectToAction("Index");
@@ -136,7 +150,6 @@ namespace HomeServices.Controllers
         {
             var userName = _httpContextAccessor.HttpContext.User.Identity.Name;
 
-            // استرجاع بيانات الشخص الحالي
             var currentPerson = _rep.View().FirstOrDefault(p => p.User.UserName == userName);
 
             if (currentPerson == null)
@@ -144,12 +157,10 @@ namespace HomeServices.Controllers
                 return RedirectToAction("Login", "Users");
             }
 
-            // تصفية المزودين حسب المدينة
             var providers = _providerRep.View()
                 .Where(p => p.User.City == currentPerson.User.City)
                 .ToList();
 
-            // استرجاع الأوردرات الخاصة بالمستخدم الحالي
             var orders = _orderRep.View()
                 .Where(o => o.Persons.User.UserName == userName)
                 .ToList();
@@ -319,7 +330,6 @@ namespace HomeServices.Controllers
         }
 
 
-        // --- يجب أن تكون لديك نسخة واحدة فقط من هذه الدالة ---
         // POST: /Person/UploadProfileImage
         [HttpPost]
         [Authorize(Roles = "Client")]
@@ -368,7 +378,6 @@ namespace HomeServices.Controllers
         {
             var userName = _httpContextAccessor.HttpContext.User.Identity.Name;
 
-            // جلب بيانات الـ Person المرتبط بالمستخدم
             var person = _context.Persons
                 .Include(p => p.User)
                 .FirstOrDefault(p => p.User != null && p.User.UserName == userName);
@@ -378,7 +387,7 @@ namespace HomeServices.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            // جلب الطلبات التابعة للمستخدم
+            
             var orders = _context.Orders
                 .Include(o => o.Persons)
                     .ThenInclude(p => p.User)
@@ -388,7 +397,6 @@ namespace HomeServices.Controllers
                 .Where(o => o.PersonId == person.PersonsId)
                 .ToList();
 
-            // جلب معرفات الطلبات التي تم تقييمها من قبل المستخدم الحالي
             var ratedOrderIds = _context.Ratings
                 .Where(r => r.PersonsId == person.PersonsId)
                 .Select(r => r.OrdersId)
@@ -422,10 +430,15 @@ namespace HomeServices.Controllers
 
             ViewBag.NewMessagesCount = newMessagesCount;
 
+            var currentUserCountry = _context.Users
+       .Where(u => u.Id == currentUserId)
+       .Select(u => u.Country)
+       .FirstOrDefault(); 
+            var providers = _context.Providers
+       .Include(p => p.User)
+       .Where(p => p.User.Country == currentUserCountry)
+       .ToList();
 
-
-
-            var providers = _context.Providers.Include(p => p.User).ToList();
             return View(providers);
         }
 
